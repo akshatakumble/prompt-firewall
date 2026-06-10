@@ -1,0 +1,151 @@
+# Airflow MLOps stack (reference: yashichawla/MLOps-Project)
+# Usage:
+#   docker compose -f docker-compose.airflow.yml run --rm airflow-init
+#   docker compose -f docker-compose.airflow.yml up -d webserver scheduler
+# UI: http://localhost:8080  (admin / admin)
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  airflow-init:
+    image: apache/airflow:2.9.3-python3.12
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .airflow.env
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__SCHEDULER__child_process_log_directory: /opt/airflow/logs/scheduler
+      PYTHONPATH: /opt/airflow/app/src:/opt/airflow/app
+      PROJECT_ROOT: /opt/airflow/app
+      HF_TOKEN: ${HF_TOKEN:-}
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN:-}
+      AIRFLOW__EMAIL__EMAIL_BACKEND: airflow.utils.email.send_email_smtp
+      AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
+      AIRFLOW__SMTP__SMTP_PORT: "587"
+      AIRFLOW__SMTP__SMTP_STARTTLS: "True"
+      AIRFLOW__SMTP__SMTP_SSL: "False"
+      AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW_SMTP_USER:-}
+      AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-}
+      AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_USER:-}
+      DVC_NO_ANALYTICS: "1"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/app
+      - ./airflow_artifacts/logs:/opt/airflow/logs
+      - ./.secrets:/opt/airflow/secrets:ro
+    working_dir: /opt/airflow/app
+    command: >
+      bash -lc "pip install --no-cache-dir --upgrade pip setuptools wheel &&
+      pip install --no-cache-dir -r requirements-docker.txt &&
+      airflow db migrate &&
+      airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin || true"
+    restart: "no"
+
+  webserver:
+    image: apache/airflow:2.9.3-python3.12
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    env_file:
+      - .airflow.env
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__SCHEDULER__child_process_log_directory: /opt/airflow/logs/scheduler
+      PYTHONPATH: /opt/airflow/app/src:/opt/airflow/app
+      PROJECT_ROOT: /opt/airflow/app
+      HF_TOKEN: ${HF_TOKEN:-}
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN:-}
+      AIRFLOW__EMAIL__EMAIL_BACKEND: airflow.utils.email.send_email_smtp
+      AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
+      AIRFLOW__SMTP__SMTP_PORT: "587"
+      AIRFLOW__SMTP__SMTP_STARTTLS: "True"
+      AIRFLOW__SMTP__SMTP_SSL: "False"
+      AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW_SMTP_USER:-}
+      AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-}
+      AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_USER:-}
+      DVC_NO_ANALYTICS: "1"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/app
+      - ./airflow_artifacts/logs:/opt/airflow/logs
+      - ./.secrets:/opt/airflow/secrets:ro
+    working_dir: /opt/airflow/app
+    command: >
+      bash -lc "pip install --no-cache-dir --upgrade pip setuptools wheel &&
+      pip install --no-cache-dir -r requirements-docker.txt &&
+      airflow webserver --port 8080"
+    ports:
+      - "${AIRFLOW_WEB_PORT:-8080}:8080"
+    restart: unless-stopped
+
+  scheduler:
+    image: apache/airflow:2.9.3-python3.12
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    env_file:
+      - .airflow.env
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__SCHEDULER__child_process_log_directory: /opt/airflow/logs/scheduler
+      PYTHONPATH: /opt/airflow/app/src:/opt/airflow/app
+      PROJECT_ROOT: /opt/airflow/app
+      HF_TOKEN: ${HF_TOKEN:-}
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN:-}
+      AIRFLOW__EMAIL__EMAIL_BACKEND: airflow.utils.email.send_email_smtp
+      AIRFLOW__SMTP__SMTP_HOST: smtp.gmail.com
+      AIRFLOW__SMTP__SMTP_PORT: "587"
+      AIRFLOW__SMTP__SMTP_STARTTLS: "True"
+      AIRFLOW__SMTP__SMTP_SSL: "False"
+      AIRFLOW__SMTP__SMTP_USER: ${AIRFLOW_SMTP_USER:-}
+      AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-}
+      AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_USER:-}
+      DVC_NO_ANALYTICS: "1"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./:/opt/airflow/app
+      - ./airflow_artifacts/logs:/opt/airflow/logs
+      - ./.secrets:/opt/airflow/secrets:ro
+    working_dir: /opt/airflow/app
+    command: >
+      bash -lc "pip install --no-cache-dir --upgrade pip setuptools wheel &&
+      pip install --no-cache-dir -r requirements-docker.txt &&
+      airflow scheduler"
+    restart: unless-stopped
+
+volumes:
+  airflow_pgdata:

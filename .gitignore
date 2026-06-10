@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.secrets/
+
+# Data & models
+data/raw/
+data/curated/
+models/
+*.parquet
+*.pt
+*.pth
+*.onnx
+
+# MLflow / DVC
+mlruns/
+.dvc/cache/
+.dvc/tmp/
+dvc-storage/
+
+# Reference download (local only)
+ref_salad_preprocess_dag.py
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs & DB
+*.log
+*.db
+airflow_artifacts/
+logs/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/

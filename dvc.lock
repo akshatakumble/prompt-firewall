@@ -1,0 +1,95 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python pipelines/ingest_dataset.py --config config/app.yaml
+    deps:
+    - path: config/app.yaml
+      hash: md5
+      md5: 8dde35ba866820e07ec62ab1cab42001
+      size: 1019
+    - path: pipelines/ingest_dataset.py
+      hash: md5
+      md5: 2dceb8db2bc812af1505d238e1898971
+      size: 7335
+    - path: src/firewall/data/bias_report.py
+      hash: md5
+      md5: cb862ecd9f824a3adec7887e7f055d50
+      size: 2289
+    - path: src/firewall/data/cleaning.py
+      hash: md5
+      md5: 38d62c088a37f126c979e765a3422e76
+      size: 1567
+    - path: src/firewall/data/manifest.py
+      hash: md5
+      md5: c73d7c2a099920c5bc063237e6c7eced
+      size: 2341
+    - path: src/firewall/data/normalizers.py
+      hash: md5
+      md5: 2a409eb218d5716a48921b5886415eb9
+      size: 8637
+    - path: src/firewall/data/sampling.py
+      hash: md5
+      md5: 64c818c125728f382c83318b8ae4e19f
+      size: 2447
+    outs:
+    - path: data/curated/v1.0/benchmarks/salad-data_normalized.parquet
+      hash: md5
+      md5: a8dac4e003c3d55a306657b8b02059fa
+      size: 5559603
+    - path: data/curated/v1.0/splits/test.parquet
+      hash: md5
+      md5: abea4edaf4c7a59562834c567edf85e8
+      size: 3715946
+    - path: data/curated/v1.0/splits/train.parquet
+      hash: md5
+      md5: ebdf1809d7b194837caafb568d4a2225
+      size: 17069602
+    - path: data/curated/v1.0/splits/validation.parquet
+      hash: md5
+      md5: ce3f627f4cdbd0d7a27bfd6e30470e19
+      size: 3670685
+    - path: data/curated/v1.0/training_combined.parquet
+      hash: md5
+      md5: 49b76ea0ae25d032efc6b833af1858a8
+      size: 24387739
+    - path: data/curated/v1.0/wildjailbreak_normalized.parquet
+      hash: md5
+      md5: 63fa52b2fe35e8f967ab4b4b9123d394
+      size: 101885289
+    - path: data/registry/v1.0/bias_report.json
+      hash: md5
+      md5: b4f555756088ffd2df28bcce730d118a
+      size: 893
+    - path: data/registry/v1.0/manifest.json
+      hash: md5
+      md5: bcca69c29e6bab1bd6d14d9cd65cf47e
+      size: 2543
+  validate:
+    cmd: "python scripts/ge_runner.py baseline --input data/curated/v1.0/splits/train.parquet
+      && python scripts/ge_runner.py validate --input data/curated/v1.0/splits/train.parquet
+      --baseline_schema data/metrics/schema/baseline/schema.json\n"
+    deps:
+    - path: data/curated/v1.0/splits/train.parquet
+      hash: md5
+      md5: ebdf1809d7b194837caafb568d4a2225
+      size: 17069602
+    - path: scripts/ge_runner.py
+      hash: md5
+      md5: a70445988052e4e03205f7b80ca83983
+      size: 6039
+    outs:
+    - path: data/metrics/schema
+      hash: md5
+      md5: 9f88502ce44f3e076f018d802f27207a.dir
+      size: 409
+      nfiles: 1
+    - path: data/metrics/stats
+      hash: md5
+      md5: e5edc5e39d0a5c7eb939978a285b0932.dir
+      size: 307
+      nfiles: 1
+    - path: data/metrics/validation
+      hash: md5
+      md5: a3c643b180eecaf835277f89614f5a03.dir
+      size: 58
+      nfiles: 1

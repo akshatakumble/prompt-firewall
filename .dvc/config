@@ -1,0 +1,6 @@
+[core]
+    remote = localstorage
+['remote "localstorage"']
+    url = ../dvc-storage
+['remote "gcsremote"']
+    url = gs://prompt-firewall-mlops-dvc/data

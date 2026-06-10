@@ -1,0 +1,53 @@
+stages:
+  ingest:
+    cmd: python pipelines/ingest_dataset.py --config config/app.yaml
+    deps:
+      - pipelines/ingest_dataset.py
+      - src/firewall/data/normalizers.py
+      - src/firewall/data/cleaning.py
+      - src/firewall/data/sampling.py
+      - src/firewall/data/manifest.py
+      - src/firewall/data/bias_report.py
+      - config/app.yaml
+    outs:
+      - data/curated/v1.0/wildjailbreak_normalized.parquet
+      - data/curated/v1.0/training_combined.parquet
+      - data/curated/v1.0/benchmarks/salad-data_normalized.parquet
+      - data/curated/v1.0/splits/train.parquet
+      - data/curated/v1.0/splits/validation.parquet
+      - data/curated/v1.0/splits/test.parquet
+      - data/registry/v1.0/manifest.json
+      - data/registry/v1.0/bias_report.json
+
+  validate:
+    cmd: >
+      python scripts/ge_runner.py baseline --input data/curated/v1.0/splits/train.parquet
+      && python scripts/ge_runner.py validate
+      --input data/curated/v1.0/splits/train.parquet
+      --baseline_schema data/metrics/schema/baseline/schema.json
+    deps:
+      - scripts/ge_runner.py
+      - data/curated/v1.0/splits/train.parquet
+    outs:
+      - data/metrics/stats
+      - data/metrics/validation
+      - data/metrics/schema
+
+  train:
+    cmd: python pipelines/train_classifier.py --config config/app.yaml --epochs 2
+    deps:
+      - pipelines/train_classifier.py
+      - data/curated/v1.0/splits/train.parquet
+      - data/curated/v1.0/splits/validation.parquet
+    outs:
+      - models/classifier-v1
+      - reports/train_metrics.json
+
+  evaluate:
+    cmd: python pipelines/evaluate_firewall.py --config config/app.yaml --benchmark salad-data
+    deps:
+      - pipelines/evaluate_firewall.py
+      - models/classifier-v1
+      - data/curated/v1.0/benchmarks/salad-data_normalized.parquet
+    outs:
+      - reports/eval_salad-data.json

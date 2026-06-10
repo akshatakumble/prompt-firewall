@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FirewallTelemetryEvent",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "request_id",
+    "prompt_hash",
+    "injection_risk_score",
+    "policy_decision",
+    "model_version",
+    "policy_version"
+  ],
+  "properties": {
+    "timestamp": { "type": "string", "format": "date-time" },
+    "request_id": { "type": "string" },
+    "prompt_hash": { "type": "string" },
+    "redacted_prompt": { "type": "string" },
+    "triggered_rules": { "type": "array", "items": { "type": "string" } },
+    "injection_risk_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "policy_decision": { "type": "string", "enum": ["ALLOW", "SANITIZE", "BLOCK"] },
+    "sanitization_method": { "type": "string" },
+    "model_version": { "type": "string" },
+    "policy_version": { "type": "string" },
+    "latency_ms": {
+      "type": "object",
+      "properties": {
+        "rules": { "type": "number" },
+        "classifier": { "type": "number" },
+        "policy": { "type": "number" },
+        "llm": { "type": "number" },
+        "output_monitor": { "type": "number" },
+        "total": { "type": "number" }
+      }
+    },
+    "output_status": { "type": "string", "enum": ["OK", "REDACT", "REFUSE", "BLOCKED"] },
+    "output_violation_reasons": { "type": "array", "items": { "type": "string" } },
+    "attack_type": { "type": "string" },
+    "source": { "type": "string" }
+  }
+}
