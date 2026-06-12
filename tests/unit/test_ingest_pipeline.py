@@ -234,3 +234,5 @@ def test_build_bias_report_flags_skew():
     report = build_bias_report(df)
     assert report["overall"]["injection_rate"] == 1.0
     assert any("eval_salad-data" in warning for warning in report["warnings"])
+    assert "fairlearn_metrics" in report
+    assert "by_prompt_length_bucket" in report

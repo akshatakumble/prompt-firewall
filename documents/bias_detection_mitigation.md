@@ -1,66 +1,102 @@
 # Bias Detection and Mitigation — Prompt Firewall Dataset
 
-## 1. Definition of bias in this project
+## 1. What “bias” means here
 
-For the firewall training corpus, **bias** means systematic imbalance in label distribution or representation across dataset sources and attack categories. A biased corpus can cause:
+This project does **not** have demographic fields (age, gender, location). Instead we analyze **categorical subgroups** that affect firewall behavior:
 
-- **Over-refusal**: blocking benign prompts from underrepresented sources
-- **Under-detection**: missing attacks from rare attack types
-- **Benchmark contamination**: training on held-out evaluation data
-
-## 2. Detection via data slicing
-
-We slice the unified schema on two categorical dimensions:
-
-| Slice dimension | Rationale |
+| Slice dimension | Why it matters |
 |---|---|
-| `source` | Each Hugging Face dataset may have different label priors |
+| `source` | Different Hugging Face datasets use different labeling styles |
 | `attack_type` | Jailbreak tactics (DAN, roleplay, system leak) vary in frequency |
+| `prompt_length_bucket` | Short vs. long prompts may be detected differently |
 
-Implementation: `src/firewall/data/bias_report.py` → `build_bias_report()`
+Bias = systematic **representation skew** or **label-rate disparity** across slices that can cause over-refusal, under-detection, or poor generalization.
 
-Output: `data/registry/v1.0/bias_report.json`
+## 2. Detection — data slicing (Fairlearn)
 
-Example metrics per slice:
+**Tool:** [Fairlearn](https://fairlearn.org/) `MetricFrame` with `selection_rate` (injection rate per slice).
 
-- Row count
+**Code:** `src/firewall/data/bias_report.py`
+
+**Slices computed:**
+- `by_source`
+- `by_attack_type`
+- `by_prompt_length_bucket` (short / medium / long / very_long / extreme)
+
+**Per-slice metrics:**
+- Row count and share of corpus
 - Label counts (`INJECTION` / `BENIGN`)
-- Injection rate
+- Injection rate / benign rate
+- Fairlearn disparity (max − min injection rate across groups)
 
-**Warning threshold**: injection rate below 15% or above 85% within a source slice triggers a warning.
+**Output:** `data/registry/v1.0/bias_report.json`
 
-## 3. Findings (v1.0)
+```json
+{
+  "before_mitigation": { "...": "raw combined pool" },
+  "after_mitigation": { "...": "balanced training corpus" },
+  "mitigation_applied": ["oversampled attack_type=...", "balanced_sample target=60000"],
+  "remaining_warnings": []
+}
+```
 
-On the WildJailbreak training sample (60K balanced rows before split):
+**Warnings triggered when:**
+- Slice has &lt; 100 rows (underrepresented)
+- Slice is &lt; 5% of corpus
+- Injection rate &lt; 15% or &gt; 85%
+- Fairlearn disparity &gt; 25%
 
-- **Overall**: 50% INJECTION / 50% BENIGN (by design via `balanced_sample`)
-- **By source**: single training source (`train_wildjailbreak`) at 50/50
-- **By attack_type**: `benign` slice is 100% BENIGN; adversarial slices are 100% INJECTION — expected given schema mapping
+## 3. Model performance slicing (Fairlearn)
 
-No cross-source skew warnings were raised for v1.0 because balancing runs before stratified splitting.
+After evaluation, slice-wise **precision, recall, and false-positive rate** are computed per `attack_type`, `source`, and `prompt_length_bucket`.
 
-## 4. Mitigation strategies applied
+**Code:** `src/firewall/data/model_bias.py` → called from `pipelines/evaluate_firewall.py`
 
-| Strategy | Implementation |
+**Output:** `reports/eval_<benchmark>.json` → `slice_performance` section
+
+This answers: *“Does the firewall perform worse on certain attack types?”*
+
+## 4. Mitigation strategies
+
+| Strategy | When | Implementation |
+|---|---|---|
+| **Attack-type oversampling** | Rare tactics underrepresented | `mitigate_slice_representation()` in ingest |
+| **Balanced label sampling** | INJECTION/BENIGN imbalance | `balanced_sample()` |
+| **Stratified splits** | Preserve label ratio in train/val/test | `create_stratified_splits()` |
+| **Held-out benchmarks** | Avoid eval contamination | Salad-Data in `benchmarks/` only |
+| **Threshold tuning** (future) | High FPR on benign slice | Adjust policy thresholds on validation set |
+
+Configured in `config/app.yaml`:
+
+```yaml
+bias:
+  mitigate_attack_type_slices: true
+  min_rows_per_attack_type: 500
+```
+
+## 5. Airflow integration
+
+| Task | Role |
 |---|---|
-| **Balanced sampling** | `balanced_sample()` caps each label before combining sources |
-| **Stratified splits** | 70/15/15 train/val/test stratified by `label` |
-| **Held-out benchmark** | Salad-Data kept in `benchmarks/` only, never merged into training |
-| **Duplicate removal** | `clean_dataframe()` drops empty and exact-duplicate prompts |
-| **Validation gating** | GE runner hard-fails on null prompts, unknown labels; soft-warns on imbalance |
+| `ingest_datasets` | Builds comparative bias report (before/after mitigation) |
+| `verify_bias_report` | Confirms report exists; surfaces slice counts + Fairlearn disparity |
+| `evaluate_firewall` | Adds model slice performance to eval JSON |
 
-## 5. Trade-offs
+## 6. How to run locally
 
-- **Balancing reduces raw volume** from ~262K WildJailbreak rows to 60K — improves class balance but discards data diversity.
-- **Single training source in v1.0** — faster to ship; additional sources (JailBreakV, Aurora-M, Simsonsun) planned for v1.1.
-- **Attack-type slices are label-deterministic** — warnings focus on `source`-level skew, not tactic-level rarity.
+```bash
+# Re-ingest and regenerate bias report
+python pipelines/ingest_dataset.py --config config/app.yaml
 
-## 6. Airflow integration
+# Inspect report
+cat data/registry/v1.0/bias_report.json
 
-The DAG task `verify_bias_report` confirms `bias_report.json` and `manifest.json` exist after ingest and surfaces slice counts in the success email.
+# Run bias unit tests
+pytest tests/unit/test_bias_report.py -q
+```
 
-## 7. Future work
+## 7. Trade-offs
 
-- Add per-`attack_type` minimum count thresholds before training
-- Expand slicing to prompt length buckets (short vs. long prompts)
-- Re-sample underrepresented tactics when multi-source ingest lands in v1.1
+- Balancing to 50/50 labels **removes natural priors** — good for training stability, not for production base rates.
+- Attack-type oversampling with replacement **duplicates prompts** — increases tactic coverage but may overfit templates.
+- Single training source (WildJailbreak) in v1.0 limits cross-source bias analysis until more datasets are added.

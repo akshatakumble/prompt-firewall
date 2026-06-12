@@ -15,7 +15,7 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from firewall.data.bias_report import build_bias_report
+from firewall.data.bias_report import build_comparative_bias_report, mitigate_slice_representation
 from firewall.data.cleaning import add_token_counts, clean_dataframe
 from firewall.data.manifest import build_manifest, write_manifest
 from firewall.data.normalizers import BENCHMARK_LOADERS, TRAIN_LOADERS
@@ -39,7 +39,7 @@ def ingest_training_data(
     target_samples: int,
     raw_dir: Path,
     curated_dir: Path,
-) -> tuple[pd.DataFrame, dict[str, Path]]:
+) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict[str, Path]]:
     artifacts: dict[str, Path] = {}
     frames: list[pd.DataFrame] = []
 
@@ -71,7 +71,21 @@ def ingest_training_data(
         combined["label"].value_counts().to_dict(),
     )
 
-    sampled = balanced_sample(combined, target_samples)
+    bias_cfg = config.get("bias", {})
+    mitigation_actions: list[str] = []
+    pool = combined
+    if bias_cfg.get("mitigate_attack_type_slices", False):
+        pool, mitigation = mitigate_slice_representation(
+            combined,
+            "attack_type",
+            min_per_slice=bias_cfg.get("min_rows_per_attack_type", 500),
+        )
+        if mitigation.get("applied"):
+            mitigation_actions.extend(mitigation.get("actions", []))
+            logger.info("Attack-type slice mitigation: %s", mitigation)
+
+    sampled = balanced_sample(pool, target_samples)
+    mitigation_actions.append(f"balanced_sample target={target_samples}")
     logger.info(
         "Balanced sample: %s rows (%s)",
         len(sampled),
@@ -82,7 +96,7 @@ def ingest_training_data(
     sampled.to_parquet(combined_path, index=False)
     artifacts["training_combined"] = combined_path
 
-    return sampled, artifacts
+    return combined, sampled, mitigation_actions, artifacts
 
 
 def ingest_benchmarks(
@@ -135,7 +149,7 @@ def main() -> None:
     curated_dir.mkdir(parents=True, exist_ok=True)
     registry_dir.mkdir(parents=True, exist_ok=True)
 
-    train_df, train_artifacts = ingest_training_data(
+    before_pool, train_df, mitigation_actions, train_artifacts = ingest_training_data(
         config,
         target_samples=target_samples,
         raw_dir=raw_dir,
@@ -173,7 +187,11 @@ def main() -> None:
         "splits/test": test_path,
     }
 
-    bias_report = build_bias_report(train_df)
+    bias_report = build_comparative_bias_report(
+        before_pool,
+        train_df,
+        mitigation_actions=mitigation_actions,
+    )
     bias_path = registry_dir / "bias_report.json"
     with open(bias_path, "w", encoding="utf-8") as handle:
         json.dump(bias_report, handle, indent=2)

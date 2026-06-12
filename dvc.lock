@@ -7,63 +7,78 @@ stages:
       hash: md5
       md5: 8dde35ba866820e07ec62ab1cab42001
       size: 1019
+      isexec: true
     - path: pipelines/ingest_dataset.py
       hash: md5
       md5: 2dceb8db2bc812af1505d238e1898971
       size: 7335
+      isexec: true
     - path: src/firewall/data/bias_report.py
       hash: md5
       md5: cb862ecd9f824a3adec7887e7f055d50
       size: 2289
+      isexec: true
     - path: src/firewall/data/cleaning.py
       hash: md5
       md5: 38d62c088a37f126c979e765a3422e76
       size: 1567
+      isexec: true
     - path: src/firewall/data/manifest.py
       hash: md5
       md5: c73d7c2a099920c5bc063237e6c7eced
       size: 2341
+      isexec: true
     - path: src/firewall/data/normalizers.py
       hash: md5
       md5: 2a409eb218d5716a48921b5886415eb9
       size: 8637
+      isexec: true
     - path: src/firewall/data/sampling.py
       hash: md5
       md5: 64c818c125728f382c83318b8ae4e19f
       size: 2447
+      isexec: true
     outs:
     - path: data/curated/v1.0/benchmarks/salad-data_normalized.parquet
       hash: md5
-      md5: a8dac4e003c3d55a306657b8b02059fa
-      size: 5559603
+      md5: 0592c9399ef8906616474ffd6169cb65
+      size: 5561460
+      isexec: true
     - path: data/curated/v1.0/splits/test.parquet
       hash: md5
-      md5: abea4edaf4c7a59562834c567edf85e8
-      size: 3715946
+      md5: 7311736739515b1b5a52399892a8cf20
+      size: 3718334
+      isexec: true
     - path: data/curated/v1.0/splits/train.parquet
       hash: md5
-      md5: ebdf1809d7b194837caafb568d4a2225
-      size: 17069602
+      md5: 08fd8ddeace6c1dcc38a8c60ead9a587
+      size: 17071531
+      isexec: true
     - path: data/curated/v1.0/splits/validation.parquet
       hash: md5
-      md5: ce3f627f4cdbd0d7a27bfd6e30470e19
-      size: 3670685
+      md5: 262ca16700f4cdceea3b158248bfe97d
+      size: 3672921
+      isexec: true
     - path: data/curated/v1.0/training_combined.parquet
       hash: md5
-      md5: 49b76ea0ae25d032efc6b833af1858a8
-      size: 24387739
+      md5: 23059b7e05b0831a8e58acb4e6509461
+      size: 24389602
+      isexec: true
     - path: data/curated/v1.0/wildjailbreak_normalized.parquet
       hash: md5
-      md5: 63fa52b2fe35e8f967ab4b4b9123d394
-      size: 101885289
+      md5: dc89845b35327e4a7677ffaef9e09d31
+      size: 101887325
+      isexec: true
     - path: data/registry/v1.0/bias_report.json
       hash: md5
-      md5: b4f555756088ffd2df28bcce730d118a
-      size: 893
+      md5: 65c5f6c0a542d3a1cae225aece1809a7
+      size: 852
+      isexec: true
     - path: data/registry/v1.0/manifest.json
       hash: md5
-      md5: bcca69c29e6bab1bd6d14d9cd65cf47e
-      size: 2543
+      md5: 0b5b2ed515289671c6b2ad9200eb3dbd
+      size: 2448
+      isexec: true
   validate:
     cmd: "python scripts/ge_runner.py baseline --input data/curated/v1.0/splits/train.parquet
       && python scripts/ge_runner.py validate --input data/curated/v1.0/splits/train.parquet
@@ -71,12 +86,14 @@ stages:
     deps:
     - path: data/curated/v1.0/splits/train.parquet
       hash: md5
-      md5: ebdf1809d7b194837caafb568d4a2225
-      size: 17069602
+      md5: 08fd8ddeace6c1dcc38a8c60ead9a587
+      size: 17071531
+      isexec: true
     - path: scripts/ge_runner.py
       hash: md5
       md5: a70445988052e4e03205f7b80ca83983
       size: 6039
+      isexec: true
     outs:
     - path: data/metrics/schema
       hash: md5
@@ -85,11 +102,11 @@ stages:
       nfiles: 1
     - path: data/metrics/stats
       hash: md5
-      md5: e5edc5e39d0a5c7eb939978a285b0932.dir
-      size: 307
-      nfiles: 1
+      md5: bcac5e7c62fac1e8b2bc4d50b30086c3.dir
+      size: 876
+      nfiles: 3
     - path: data/metrics/validation
       hash: md5
-      md5: a3c643b180eecaf835277f89614f5a03.dir
-      size: 58
-      nfiles: 1
+      md5: 9e17a92be11dbf9317655fce76d556c7.dir
+      size: 162
+      nfiles: 3

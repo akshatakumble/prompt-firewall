@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Great Expectations-style validation runner for curated datasets."""
+"""Great Expectations validation runner for curated firewall datasets."""
 
 from __future__ import annotations
 
@@ -9,66 +9,95 @@ import logging
 from datetime import datetime
 from pathlib import Path
 
+import great_expectations as gx
 import pandas as pd
+from great_expectations.expectations import (
+    ExpectColumnToExist,
+    ExpectColumnValuesToBeInSet,
+    ExpectColumnValuesToBeUnique,
+    ExpectColumnValuesToNotBeNull,
+    ExpectTableRowCountToBeBetween,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 logger = logging.getLogger("ge_runner")
 
+SUITE_NAME = "firewall_training_suite"
 REQUIRED_COLUMNS = ("id", "text", "label", "source", "attack_type")
 VALID_LABELS = frozenset({"INJECTION", "BENIGN"})
+SCHEMA_DIR = PROJECT_ROOT / "data" / "metrics" / "schema" / "baseline"
+SUITE_PATH = SCHEMA_DIR / "expectation_suite.json"
+SCHEMA_PATH = SCHEMA_DIR / "schema.json"
 
 
-def generate_baseline_schema(df: pd.DataFrame) -> dict:
-    return {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
-        "required_columns": list(REQUIRED_COLUMNS),
-        "columns": {col: str(df[col].dtype) for col in df.columns if col in df.columns},
-        "valid_labels": sorted(VALID_LABELS),
-        "row_count": len(df),
-    }
+def build_expectation_suite(context: gx.DataContext, row_count: int) -> gx.ExpectationSuite:
+    """Create or load the Great Expectations suite for training data."""
+    try:
+        suite = context.suites.get(name=SUITE_NAME)
+    except Exception:
+        suite = context.suites.add(gx.ExpectationSuite(name=SUITE_NAME))
+
+    suite.expectations = []
+    for column in REQUIRED_COLUMNS:
+        suite.add_expectation(ExpectColumnToExist(column=column))
+
+    suite.add_expectation(ExpectColumnValuesToNotBeNull(column="text"))
+    suite.add_expectation(ExpectColumnValuesToNotBeNull(column="label"))
+    suite.add_expectation(ExpectColumnValuesToBeInSet(column="label", value_set=sorted(VALID_LABELS)))
+    suite.add_expectation(ExpectColumnValuesToBeUnique(column="text"))
+
+    if row_count >= 100:
+        min_rows = max(100, int(row_count * 0.5))
+        max_rows = int(row_count * 1.5) + 1000
+        suite.add_expectation(
+            ExpectTableRowCountToBeBetween(min_value=min_rows, max_value=max_rows)
+        )
+
+    context.suites.add_or_update(suite)
+    return suite
 
 
-def validate_against_schema(df: pd.DataFrame, baseline: dict) -> list[str]:
-    failures: list[str] = []
-    for column in baseline.get("required_columns", REQUIRED_COLUMNS):
-        if column not in df.columns:
-            failures.append(f"missing_column:{column}")
-    return failures
+def get_validator(context: gx.DataContext, df: pd.DataFrame, suite: gx.ExpectationSuite):
+    data_source = context.data_sources.add_pandas(name="firewall_pandas")
+    try:
+        data_asset = data_source.get_asset(name="train_data")
+    except Exception:
+        data_asset = data_source.add_dataframe_asset(name="train_data")
+
+    try:
+        batch_definition = data_asset.get_batch_definition(name="whole")
+    except Exception:
+        batch_definition = data_asset.add_batch_definition_whole_dataframe(name="whole")
+
+    batch = batch_definition.get_batch(batch_parameters={"dataframe": df})
+    return context.get_validator(batch=batch, expectation_suite=suite)
 
 
-def validate_dataframe(df: pd.DataFrame, baseline: dict | None = None) -> dict:
+def ge_results_to_artifacts(df: pd.DataFrame, validation_result) -> dict:
+    """Map Great Expectations validation output to stats + anomalies JSON."""
     anomalies = {"hard_fail": [], "soft_warn": [], "info": []}
+    text_lengths = df["text"].dropna().astype(str).str.len() if "text" in df.columns else pd.Series(dtype=int)
     stats = {
         "row_count": len(df),
         "null_prompts": int(df["text"].isna().sum()) if "text" in df.columns else 0,
         "duplicates": int(df.duplicated(subset=["text"]).sum()) if "text" in df.columns else 0,
         "unknown_label_rate": 0.0,
-        "text_len_min": int(df["text"].str.len().min()) if "text" in df.columns and len(df) else 0,
-        "text_len_max": int(df["text"].str.len().max()) if "text" in df.columns and len(df) else 0,
+        "text_len_min": int(text_lengths.min()) if not text_lengths.empty else 0,
+        "text_len_max": int(text_lengths.max()) if not text_lengths.empty else 0,
+        "ge_success": validation_result.success,
+        "ge_evaluated_expectations": validation_result.statistics.get("evaluated_expectations", 0),
+        "ge_successful_expectations": validation_result.statistics.get("successful_expectations", 0),
+        "ge_unsuccessful_expectations": validation_result.statistics.get("unsuccessful_expectations", 0),
     }
-
-    if baseline is not None:
-        schema_failures = validate_against_schema(df, baseline)
-        if schema_failures:
-            anomalies["hard_fail"].extend(schema_failures)
-
-    if stats["null_prompts"] > 0:
-        anomalies["hard_fail"].append("null_prompts_detected")
-    if stats["duplicates"] > 0:
-        anomalies["soft_warn"].append("duplicate_prompts_detected")
 
     if "label" in df.columns:
         unknown = ~df["label"].isin(VALID_LABELS)
         stats["unknown_label_rate"] = float(unknown.mean())
         stats["label_counts"] = {str(k): int(v) for k, v in df["label"].value_counts().to_dict().items()}
-        if stats["unknown_label_rate"] > 0:
-            anomalies["hard_fail"].append("unknown_labels_detected")
-
         injection_rate = stats["label_counts"].get("INJECTION", 0) / stats["row_count"] if stats["row_count"] else 0
         stats["injection_rate"] = round(injection_rate, 4)
-        if stats["row_count"] >= 100:
-            if injection_rate < 0.35 or injection_rate > 0.65:
-                anomalies["soft_warn"].append("label_imbalance_detected")
+        if stats["row_count"] >= 100 and (injection_rate < 0.35 or injection_rate > 0.65):
+            anomalies["soft_warn"].append("label_imbalance_detected")
 
     if "source" in df.columns:
         stats["source_counts"] = {
@@ -78,7 +107,44 @@ def validate_dataframe(df: pd.DataFrame, baseline: dict | None = None) -> dict:
     if stats["text_len_max"] > 8000:
         anomalies["soft_warn"].append("very_long_prompts_detected")
 
+    for result in validation_result.results:
+        exp_type = result.expectation_config.type
+        success = result.success
+        column = result.expectation_config.kwargs.get("column", "")
+        key = f"ge:{exp_type}:{column}" if column else f"ge:{exp_type}"
+
+        if success:
+            anomalies["info"].append(key)
+            continue
+
+        if exp_type in {
+            "expect_column_values_to_not_be_null",
+            "expect_column_values_to_be_in_set",
+            "expect_column_to_exist",
+            "expect_column_values_to_be_unique",
+        }:
+            anomalies["hard_fail"].append(key)
+        else:
+            anomalies["soft_warn"].append(key)
+
     return {"stats": stats, "anomalies": anomalies}
+
+
+def save_baseline_schema(df: pd.DataFrame, suite: gx.ExpectationSuite) -> None:
+    SCHEMA_DIR.mkdir(parents=True, exist_ok=True)
+    schema = {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "validator": "great_expectations",
+        "suite_name": SUITE_NAME,
+        "required_columns": list(REQUIRED_COLUMNS),
+        "columns": {col: str(df[col].dtype) for col in df.columns if col in df.columns},
+        "valid_labels": sorted(VALID_LABELS),
+        "row_count": len(df),
+    }
+    with open(SCHEMA_PATH, "w", encoding="utf-8") as handle:
+        json.dump(schema, handle, indent=2)
+    with open(SUITE_PATH, "w", encoding="utf-8") as handle:
+        json.dump(suite.to_json_dict(), handle, indent=2)
 
 
 def write_artifacts(result: dict, date: str) -> tuple[Path, Path]:
@@ -94,6 +160,17 @@ def write_artifacts(result: dict, date: str) -> tuple[Path, Path]:
     with open(anomalies_path, "w", encoding="utf-8") as handle:
         json.dump(result["anomalies"], handle, indent=2)
     return stats_path, anomalies_path
+
+
+def run_validation(df: pd.DataFrame, *, baseline_mode: bool) -> dict:
+    context = gx.get_context(mode="ephemeral")
+    suite = build_expectation_suite(context, len(df))
+    if baseline_mode:
+        save_baseline_schema(df, suite)
+
+    validator = get_validator(context, df, suite)
+    validation_result = validator.validate()
+    return ge_results_to_artifacts(df, validation_result)
 
 
 def main() -> None:
@@ -112,37 +189,24 @@ def main() -> None:
     df = pd.read_parquet(input_path) if input_path.suffix == ".parquet" else pd.read_csv(input_path)
 
     if args.mode == "baseline":
-        schema_dir = PROJECT_ROOT / "data" / "metrics" / "schema" / "baseline"
-        schema_dir.mkdir(parents=True, exist_ok=True)
-        schema_path = schema_dir / "schema.json"
-        schema = generate_baseline_schema(df)
-        with open(schema_path, "w", encoding="utf-8") as handle:
-            json.dump(schema, handle, indent=2)
-        logger.info("Baseline schema written to %s", schema_path)
-        result = validate_dataframe(df, schema)
+        result = run_validation(df, baseline_mode=True)
         write_artifacts(result, args.date)
-        print(f"Baseline created: {schema_path}")
+        logger.info("Great Expectations baseline suite written to %s", SUITE_PATH)
+        print(f"Baseline created: {SCHEMA_PATH}")
         return
 
-    baseline = None
-    baseline_path = Path(args.baseline_schema) if args.baseline_schema else (
-        PROJECT_ROOT / "data" / "metrics" / "schema" / "baseline" / "schema.json"
-    )
-    if not baseline_path.exists():
-        print(f"Baseline schema missing: {baseline_path}")
+    if not SCHEMA_PATH.exists() or not SUITE_PATH.exists():
+        print(f"Baseline missing. Run baseline mode first. Expected: {SCHEMA_PATH}")
         raise SystemExit(2)
 
-    with open(baseline_path, encoding="utf-8") as handle:
-        baseline = json.load(handle)
-
-    result = validate_dataframe(df, baseline)
+    result = run_validation(df, baseline_mode=False)
     stats_path, anomalies_path = write_artifacts(result, args.date)
 
     if result["anomalies"]["hard_fail"]:
-        logger.error("Validation FAILED: %s", result["anomalies"]["hard_fail"])
+        logger.error("Great Expectations validation FAILED: %s", result["anomalies"]["hard_fail"])
         raise SystemExit(1)
 
-    logger.info("Validation passed. stats=%s anomalies=%s", stats_path, anomalies_path)
+    logger.info("Great Expectations validation passed. stats=%s anomalies=%s", stats_path, anomalies_path)
     print("Validation passed.")
 
 

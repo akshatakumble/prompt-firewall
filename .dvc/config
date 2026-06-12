@@ -1,5 +1,5 @@
 [core]
-    remote = localstorage
+    remote = gcsremote
 ['remote "localstorage"']
     url = ../dvc-storage
 ['remote "gcsremote"']

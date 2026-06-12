@@ -14,6 +14,8 @@ import yaml
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+from firewall.data.bias_report import add_prompt_length_bucket
+from firewall.data.model_bias import evaluate_slice_performance
 from firewall.service import FirewallService
 
 
@@ -69,9 +71,13 @@ def main() -> None:
         print(f"Benchmark not found: {benchmark_path}. Run ingest first.")
         sys.exit(1)
 
-    df = pd.read_parquet(benchmark_path)
+    df = add_prompt_length_bucket(pd.read_parquet(benchmark_path))
     firewall = FirewallService()
     metrics = evaluate_dataframe(firewall, df)
+    metrics["slice_performance"] = evaluate_slice_performance(
+        df,
+        predict_fn=lambda text: firewall.inspect(text).action in ("BLOCK", "SANITIZE"),
+    )
 
     reports_dir = PROJECT_ROOT / "reports"
     reports_dir.mkdir(exist_ok=True)

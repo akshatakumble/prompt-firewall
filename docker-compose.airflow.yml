@@ -21,7 +21,10 @@ services:
     restart: unless-stopped
 
   airflow-init:
-    image: apache/airflow:2.9.3-python3.12
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.airflow
+    image: prompt-firewall-airflow:2.9.3
     depends_on:
       postgres:
         condition: service_healthy
@@ -48,6 +51,7 @@ services:
       AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-}
       AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_USER:-}
       DVC_NO_ANALYTICS: "1"
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/secrets/gcp-key.json
     volumes:
       - ./dags:/opt/airflow/dags
       - ./:/opt/airflow/app
@@ -55,14 +59,15 @@ services:
       - ./.secrets:/opt/airflow/secrets:ro
     working_dir: /opt/airflow/app
     command: >
-      bash -lc "pip install --no-cache-dir --upgrade pip setuptools wheel &&
-      pip install --no-cache-dir -r requirements-docker.txt &&
-      airflow db migrate &&
+      bash -lc "airflow db migrate &&
       airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin || true"
     restart: "no"
 
   webserver:
-    image: apache/airflow:2.9.3-python3.12
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.airflow
+    image: prompt-firewall-airflow:2.9.3
     depends_on:
       postgres:
         condition: service_healthy
@@ -91,22 +96,29 @@ services:
       AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-}
       AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_USER:-}
       DVC_NO_ANALYTICS: "1"
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/secrets/gcp-key.json
     volumes:
       - ./dags:/opt/airflow/dags
       - ./:/opt/airflow/app
       - ./airflow_artifacts/logs:/opt/airflow/logs
       - ./.secrets:/opt/airflow/secrets:ro
     working_dir: /opt/airflow/app
-    command: >
-      bash -lc "pip install --no-cache-dir --upgrade pip setuptools wheel &&
-      pip install --no-cache-dir -r requirements-docker.txt &&
-      airflow webserver --port 8080"
+    command: airflow webserver --port 8080
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     ports:
       - "${AIRFLOW_WEB_PORT:-8080}:8080"
     restart: unless-stopped
 
   scheduler:
-    image: apache/airflow:2.9.3-python3.12
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.airflow
+    image: prompt-firewall-airflow:2.9.3
     depends_on:
       postgres:
         condition: service_healthy
@@ -135,16 +147,14 @@ services:
       AIRFLOW__SMTP__SMTP_PASSWORD: ${AIRFLOW_SMTP_PASSWORD:-}
       AIRFLOW__SMTP__SMTP_MAIL_FROM: ${AIRFLOW_SMTP_USER:-}
       DVC_NO_ANALYTICS: "1"
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/secrets/gcp-key.json
     volumes:
       - ./dags:/opt/airflow/dags
       - ./:/opt/airflow/app
       - ./airflow_artifacts/logs:/opt/airflow/logs
       - ./.secrets:/opt/airflow/secrets:ro
     working_dir: /opt/airflow/app
-    command: >
-      bash -lc "pip install --no-cache-dir --upgrade pip setuptools wheel &&
-      pip install --no-cache-dir -r requirements-docker.txt &&
-      airflow scheduler"
+    command: airflow scheduler
     restart: unless-stopped
 
 volumes:

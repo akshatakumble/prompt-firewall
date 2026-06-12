@@ -160,8 +160,14 @@ def firewall_ml_pipeline_v1():
             bias = json.load(handle)
         with open(manifest_path, encoding="utf-8") as handle:
             manifest = json.load(handle)
+        after = bias.get("after_mitigation", bias)
+        fairlearn = after.get("fairlearn_metrics", {})
+        attack_disparity = fairlearn.get("by_attack_type", {}).get("disparity")
         return {
-            "bias_sources": len(bias.get("by_source", {})),
+            "bias_sources": len(after.get("by_source", {})),
+            "attack_slices": len(after.get("by_attack_type", {})),
+            "fairlearn_attack_disparity": attack_disparity,
+            "warnings_count": len(after.get("warnings", [])),
             "manifest_version": manifest.get("version"),
             "training_rows": manifest.get("actual_training_rows"),
         }

@@ -34,6 +34,12 @@ datasets:
     val_ratio: 0.15
     test_ratio: 0.15
 
+bias:
+  mitigate_attack_type_slices: true
+  min_rows_per_attack_type: 500
+  imbalance_threshold: 0.15
+  min_representation_share: 0.05
+
 paths:
   raw: "data/raw"
   curated: "data/curated/v1.0"

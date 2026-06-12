@@ -31,6 +31,7 @@ def main() -> None:
         PROJECT_ROOT / "data" / "metrics" / "schema" / "baseline",
         PROJECT_ROOT / "reports",
         PROJECT_ROOT / "models",
+        PROJECT_ROOT / "mlruns",
         PROJECT_ROOT / "airflow_artifacts" / "logs",
     ]
     for path in dirs:
