@@ -52,3 +52,6 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Generated reports (regenerate via train/eval)
+reports/

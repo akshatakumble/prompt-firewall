@@ -42,12 +42,15 @@ stages:
     outs:
       - models/classifier-v1
       - reports/train_metrics.json
+      - reports/bias_report.json
+      - data/bias/bias_report_classifier.json
 
   evaluate:
-    cmd: python pipelines/evaluate_firewall.py --config config/app.yaml --benchmark salad-data
+    cmd: python pipelines/evaluate_firewall.py --config config/app.yaml --benchmark salad-data --skip-shap
     deps:
       - pipelines/evaluate_firewall.py
       - models/classifier-v1
       - data/curated/v1.0/benchmarks/salad-data_normalized.parquet
     outs:
       - reports/eval_salad-data.json
+      - reports/figures

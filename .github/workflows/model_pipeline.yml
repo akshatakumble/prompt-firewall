@@ -1,0 +1,63 @@
+name: Model Pipeline
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "pipelines/**"
+      - "src/firewall/**"
+      - "config/**"
+      - "scripts/bias_detection.py"
+      - "scripts/eval_regression_gate.py"
+      - ".github/workflows/model_pipeline.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "pipelines/**"
+      - "src/firewall/**"
+      - "config/**"
+
+jobs:
+  model-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Unit tests
+        run: pytest tests/unit -q
+
+      - name: Quick train (subset)
+        run: |
+          python scripts/ensure_pipeline_dirs.py
+          if [ -f data/curated/v1.0/splits/train.parquet ]; then
+            python pipelines/train_classifier.py --config config/app.yaml --quick --epochs 1 --max-train 1000
+          else
+            echo "No local parquet splits; skipping train (run ingest locally or use DVC pull)."
+          fi
+
+      - name: Evaluate smoke test on Salad-Data
+        run: |
+          if [ -f models/classifier-v1/config.json ] && [ -f data/curated/v1.0/benchmarks/salad-data_normalized.parquet ]; then
+            python pipelines/evaluate_firewall.py \
+              --config config/app.yaml \
+              --benchmark salad-data \
+              --max-samples 200 \
+              --skip-shap \
+              --min-recall 0.50
+          else
+            echo "Skipping eval smoke test — missing model or benchmark data."
+          fi
+
+      - name: Lint model code
+        run: ruff check src/firewall/training pipelines/train_classifier.py pipelines/evaluate_firewall.py scripts/bias_detection.py

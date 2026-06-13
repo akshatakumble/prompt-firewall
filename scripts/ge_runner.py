@@ -11,13 +11,6 @@ from pathlib import Path
 
 import great_expectations as gx
 import pandas as pd
-from great_expectations.expectations import (
-    ExpectColumnToExist,
-    ExpectColumnValuesToBeInSet,
-    ExpectColumnValuesToBeUnique,
-    ExpectColumnValuesToNotBeNull,
-    ExpectTableRowCountToBeBetween,
-)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 logger = logging.getLogger("ge_runner")
@@ -30,47 +23,27 @@ SUITE_PATH = SCHEMA_DIR / "expectation_suite.json"
 SCHEMA_PATH = SCHEMA_DIR / "schema.json"
 
 
-def build_expectation_suite(context: gx.DataContext, row_count: int) -> gx.ExpectationSuite:
-    """Create or load the Great Expectations suite for training data."""
-    try:
-        suite = context.suites.get(name=SUITE_NAME)
-    except Exception:
-        suite = context.suites.add(gx.ExpectationSuite(name=SUITE_NAME))
+def _expectation_type(result) -> str:
+    config = result.expectation_config
+    return getattr(config, "expectation_type", None) or getattr(config, "type", "unknown")
 
-    suite.expectations = []
+
+def apply_expectations(ge_df, row_count: int):
+    """Attach expectations to a Great Expectations PandasDataset (GE 0.18 API)."""
     for column in REQUIRED_COLUMNS:
-        suite.add_expectation(ExpectColumnToExist(column=column))
+        ge_df.expect_column_to_exist(column)
 
-    suite.add_expectation(ExpectColumnValuesToNotBeNull(column="text"))
-    suite.add_expectation(ExpectColumnValuesToNotBeNull(column="label"))
-    suite.add_expectation(ExpectColumnValuesToBeInSet(column="label", value_set=sorted(VALID_LABELS)))
-    suite.add_expectation(ExpectColumnValuesToBeUnique(column="text"))
+    ge_df.expect_column_values_to_not_be_null("text")
+    ge_df.expect_column_values_to_not_be_null("label")
+    ge_df.expect_column_values_to_be_in_set("label", sorted(VALID_LABELS))
+    ge_df.expect_column_values_to_be_unique("text")
 
     if row_count >= 100:
         min_rows = max(100, int(row_count * 0.5))
         max_rows = int(row_count * 1.5) + 1000
-        suite.add_expectation(
-            ExpectTableRowCountToBeBetween(min_value=min_rows, max_value=max_rows)
-        )
+        ge_df.expect_table_row_count_to_be_between(min_value=min_rows, max_value=max_rows)
 
-    context.suites.add_or_update(suite)
-    return suite
-
-
-def get_validator(context: gx.DataContext, df: pd.DataFrame, suite: gx.ExpectationSuite):
-    data_source = context.data_sources.add_pandas(name="firewall_pandas")
-    try:
-        data_asset = data_source.get_asset(name="train_data")
-    except Exception:
-        data_asset = data_source.add_dataframe_asset(name="train_data")
-
-    try:
-        batch_definition = data_asset.get_batch_definition(name="whole")
-    except Exception:
-        batch_definition = data_asset.add_batch_definition_whole_dataframe(name="whole")
-
-    batch = batch_definition.get_batch(batch_parameters={"dataframe": df})
-    return context.get_validator(batch=batch, expectation_suite=suite)
+    return ge_df
 
 
 def ge_results_to_artifacts(df: pd.DataFrame, validation_result) -> dict:
@@ -108,7 +81,7 @@ def ge_results_to_artifacts(df: pd.DataFrame, validation_result) -> dict:
         anomalies["soft_warn"].append("very_long_prompts_detected")
 
     for result in validation_result.results:
-        exp_type = result.expectation_config.type
+        exp_type = _expectation_type(result)
         success = result.success
         column = result.expectation_config.kwargs.get("column", "")
         key = f"ge:{exp_type}:{column}" if column else f"ge:{exp_type}"
@@ -130,7 +103,7 @@ def ge_results_to_artifacts(df: pd.DataFrame, validation_result) -> dict:
     return {"stats": stats, "anomalies": anomalies}
 
 
-def save_baseline_schema(df: pd.DataFrame, suite: gx.ExpectationSuite) -> None:
+def save_baseline_schema(df: pd.DataFrame, ge_df) -> None:
     SCHEMA_DIR.mkdir(parents=True, exist_ok=True)
     schema = {
         "generated_at": datetime.utcnow().isoformat() + "Z",
@@ -141,10 +114,15 @@ def save_baseline_schema(df: pd.DataFrame, suite: gx.ExpectationSuite) -> None:
         "valid_labels": sorted(VALID_LABELS),
         "row_count": len(df),
     }
+    suite = ge_df.get_expectation_suite()
+    suite_doc = {
+        "expectation_suite_name": SUITE_NAME,
+        "expectations": [exp.to_json_dict() for exp in suite.expectations],
+    }
     with open(SCHEMA_PATH, "w", encoding="utf-8") as handle:
         json.dump(schema, handle, indent=2)
     with open(SUITE_PATH, "w", encoding="utf-8") as handle:
-        json.dump(suite.to_json_dict(), handle, indent=2)
+        json.dump(suite_doc, handle, indent=2)
 
 
 def write_artifacts(result: dict, date: str) -> tuple[Path, Path]:
@@ -163,13 +141,11 @@ def write_artifacts(result: dict, date: str) -> tuple[Path, Path]:
 
 
 def run_validation(df: pd.DataFrame, *, baseline_mode: bool) -> dict:
-    context = gx.get_context(mode="ephemeral")
-    suite = build_expectation_suite(context, len(df))
+    ge_df = apply_expectations(gx.from_pandas(df), len(df))
     if baseline_mode:
-        save_baseline_schema(df, suite)
+        save_baseline_schema(df, ge_df)
 
-    validator = get_validator(context, df, suite)
-    validation_result = validator.validate()
+    validation_result = ge_df.validate()
     return ge_results_to_artifacts(df, validation_result)
 
 

@@ -197,8 +197,18 @@ def firewall_ml_pipeline_v1():
         ),
     )
 
+    compute_bias_slices = BashOperator(
+        task_id="compute_bias_slices",
+        bash_command=f'cd "{REPO_ROOT}" && python scripts/bias_detection.py --config config/app.yaml --parquet data/curated/v1.0/benchmarks/salad-data_normalized.parquet --output data/bias/bias_report_classifier.json',
+    )
+
     regression_gate = BashOperator(
         task_id="regression_gate",
+        bash_command=f'cd "{REPO_ROOT}" && python scripts/eval_regression_gate.py',
+    )
+
+    red_team_gate = BashOperator(
+        task_id="red_team_gate",
         bash_command=f'cd "{REPO_ROOT}" && python scripts/red_team_eval.py',
     )
 
@@ -261,9 +271,11 @@ def firewall_ml_pipeline_v1():
     dvc_pull >> ensure_dirs >> ingest_data >> metrics
     metrics >> [report_task, enforce_task, bias_task]
     [enforce_task, bias_task] >> dvc_push_data >> train_classifier >> evaluate_firewall
-    evaluate_firewall >> regression_gate >> dvc_push_final >> email_success
+    evaluate_firewall >> [compute_bias_slices, regression_gate, red_team_gate]
+    [compute_bias_slices, regression_gate, red_team_gate] >> dvc_push_final >> email_success
     [dvc_pull, ensure_dirs, ingest_data, metrics, enforce_task, dvc_push_data,
-     train_classifier, evaluate_firewall, regression_gate, dvc_push_final] >> email_failure
+     train_classifier, evaluate_firewall, compute_bias_slices, regression_gate,
+     red_team_gate, dvc_push_final] >> email_failure
 
 
 firewall_ml_pipeline_v1()

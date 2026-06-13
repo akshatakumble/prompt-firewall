@@ -1,0 +1,47 @@
+# Pinned dev environment for ingest + validate + train + evaluate (Windows/Python 3.10).
+#
+# Install:
+#   .\venv\Scripts\activate
+#   pip install --upgrade pip setuptools wheel
+#   pip install torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements-dev.txt
+
+# Core scientific stack
+numpy==1.26.4
+pandas==2.2.2
+pyarrow==16.1.0
+scipy==1.15.3
+scikit-learn==1.5.2
+joblib==1.4.2
+matplotlib==3.9.2
+
+# Config / IO
+pyyaml==6.0.2
+python-dotenv==1.0.1
+requests==2.32.3
+
+# HuggingFace (versions must match each other)
+huggingface-hub==0.25.2
+tokenizers==0.20.3
+safetensors==0.4.5
+transformers==4.46.3
+datasets==2.21.0
+
+# MLflow + fairness
+mlflow==2.16.2
+sqlalchemy==2.0.36
+fairlearn==0.10.0
+
+# Data pipeline
+great-expectations==0.18.21
+dvc==3.55.2
+
+# Evaluation extras (optional but used by evaluate_firewall.py)
+shap==0.46.0
+
+# Dev / CI
+pytest==8.3.3
+ruff==0.7.2
+
+# torch is installed separately (CPU wheel); pin for reference:
+# torch==2.2.2+cpu

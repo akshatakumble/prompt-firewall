@@ -1,0 +1,4 @@
+# Pinned dev environment — see requirements-dev.txt for the canonical list.
+# Install: .\scripts\install_dev_deps.ps1
+
+-r requirements-dev.txt
