@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from firewall.classifier.scorer import ClassifierScorer
 from firewall.config import AppConfig, load_app_config, load_rules_config
 from firewall.llm.client import LLMClient
-from firewall.output_monitor.monitor import OutputMonitor, OutputStatus
+from firewall.output_monitor.monitor import OutputMonitor
 from firewall.policy.engine import PolicyAction, PolicyEngine
 from firewall.rules.engine import RuleEngine
 from firewall.telemetry.store import TelemetryStore
@@ -46,6 +46,7 @@ class FirewallService:
         self.policy_engine = PolicyEngine(
             self.config.thresholds,
             rules_cfg.get("sanitization_patterns", []),
+            classifier_operating_threshold=self.classifier.operating_threshold,
         )
         self.output_monitor = OutputMonitor(rules_cfg.get("output_rules", []))
         self.telemetry = TelemetryStore()
@@ -69,7 +70,7 @@ class FirewallService:
 
         t0 = time.perf_counter()
         decision = self.policy_engine.decide(
-            prompt, rule_result.max_score, classifier_score
+            prompt, rule_result, classifier_score
         )
         latencies["policy"] = (time.perf_counter() - t0) * 1000
         latencies["total"] = (time.perf_counter() - total_start) * 1000
@@ -107,7 +108,7 @@ class FirewallService:
             return ChatResult(
                 request_id=inspect_result.request_id,
                 action=inspect_result.action,
-                response="Request blocked by prompt firewall due to high injection risk.",
+                response="This request cannot be processed.",
                 output_status="BLOCKED",
                 risk_score=inspect_result.risk_score,
                 triggered_rules=inspect_result.triggered_rules,

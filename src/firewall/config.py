@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import yaml
 from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -15,10 +14,11 @@ CONFIG_DIR = PROJECT_ROOT / "config"
 
 
 class Thresholds(BaseModel):
-    allow_max: float = 0.30
-    sanitize_max: float = 0.70
-    block_min: float = 0.70
-    near_miss_min: float = 0.55
+    allow_max: float = 0.50
+    sanitize_min: float = 0.50
+    sanitize_max: float = 0.80
+    block_min: float = 0.80
+    near_miss_min: float = 0.45
 
 
 class ClassifierConfig(BaseModel):
@@ -51,9 +51,13 @@ class Settings(BaseSettings):
     model_version: str = "v1.0"
     dataset_version: str = "v1.0"
 
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        env_file=(
+            str(PROJECT_ROOT / ".env"),
+            str(PROJECT_ROOT / ".secrets" / "groq.env"),
+        ),
+        extra="ignore",
+    )
 
 
 @lru_cache
@@ -73,11 +77,4 @@ def load_rules_config(config_path: Path | None = None) -> dict[str, Any]:
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings(
-        groq_api_key=os.getenv("GROQ_API_KEY", ""),
-        hf_token=os.getenv("HF_TOKEN", ""),
-        victim_llm_provider=os.getenv("VICTIM_LLM_PROVIDER", "groq"),
-        victim_llm_model=os.getenv("VICTIM_LLM_MODEL", "llama-3.1-8b-instant"),
-        database_url=os.getenv("DATABASE_URL", "sqlite:///./data/firewall.db"),
-        mlflow_tracking_uri=os.getenv("MLFLOW_TRACKING_URI", "sqlite:///./mlruns/mlflow.db"),
-    )
+    return Settings()

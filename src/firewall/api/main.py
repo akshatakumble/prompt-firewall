@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Query
 from prometheus_client import Counter, Histogram, generate_latest
-from starlette.responses import PlainTextResponse
+from starlette.responses import HTMLResponse, PlainTextResponse
 
 from firewall.api.schemas import (
     AnalyticsResponse,
@@ -44,9 +44,46 @@ app = FastAPI(
 )
 
 
+@app.get("/", response_class=HTMLResponse)
+async def root() -> str:
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Prompt Firewall</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { margin-bottom: 0.25rem; }
+    p { color: #444; }
+    ul { line-height: 1.8; }
+    a { color: #2563eb; }
+    code { background: #f3f4f6; padding: 0.15rem 0.4rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Prompt Firewall API</h1>
+  <p>Runtime security gateway — rule engine + DistilBERT + Groq LLaMA 3.1 8B.</p>
+  <ul>
+    <li><a href="/docs">Interactive API docs</a> (try <code>POST /inspect</code> and <code>POST /chat</code>)</li>
+    <li><a href="/health">Health check</a></li>
+    <li><a href="/analytics">Analytics</a></li>
+    <li><a href="/metrics">Prometheus metrics</a></li>
+  </ul>
+  <p>Example: <code>POST /inspect</code> with body <code>{"prompt": "What is the capital of France?"}</code></p>
+</body>
+</html>"""
+
+
 @app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok"}
+async def health() -> dict[str, str | bool]:
+    assert service is not None
+    return {
+        "status": "ok",
+        "classifier_loaded": service.classifier.is_loaded,
+        "llm_provider": service.config.llm.get("provider", "groq"),
+        "llm_model": service.config.llm.get("model", ""),
+        "model_version": service.config.model_version,
+    }
 
 
 @app.post("/inspect", response_model=InspectResponse)

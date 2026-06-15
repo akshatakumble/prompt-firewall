@@ -19,6 +19,11 @@ from firewall.data.bias_report import build_comparative_bias_report, mitigate_sl
 from firewall.data.cleaning import add_token_counts, clean_dataframe
 from firewall.data.manifest import build_manifest, write_manifest
 from firewall.data.normalizers import BENCHMARK_LOADERS, TRAIN_LOADERS
+from firewall.data.salad_split import (
+    SALAD_TRAIN_SOURCE,
+    salad_split_metadata,
+    split_salad_train_holdout,
+)
 from firewall.data.sampling import balanced_sample, create_stratified_splits
 
 logging.basicConfig(
@@ -33,17 +38,67 @@ def load_config(config_path: Path) -> dict:
         return yaml.safe_load(handle)
 
 
+def _prepare_salad_frames(
+    config: dict,
+    *,
+    raw_dir: Path,
+) -> tuple[pd.DataFrame | None, pd.DataFrame | None, dict]:
+    """Load Salad-Data once and split for train pool vs held-out benchmark when needed."""
+    train_names = config["datasets"].get("train", [])
+    eval_names = config["datasets"].get("eval_held_out", [])
+    salad_in_train = "salad-data" in train_names
+    salad_in_eval = "salad-data" in eval_names
+
+    if not salad_in_train and not salad_in_eval:
+        return None, None, {}
+
+    loader = BENCHMARK_LOADERS.get("salad-data")
+    if loader is None:
+        raise RuntimeError("Salad-Data loader is not configured.")
+
+    logger.info("Loading Salad-Data for ingest (train=%s, benchmark=%s)", salad_in_train, salad_in_eval)
+    full_df = clean_dataframe(add_token_counts(loader(raw_dir / "salad-data")))
+
+    if salad_in_train and salad_in_eval:
+        holdout_fraction = float(config["datasets"].get("salad_holdout_fraction", 0.2))
+        random_state = int(config["datasets"].get("salad_split_seed", 42))
+        train_df, benchmark_df = split_salad_train_holdout(
+            full_df,
+            holdout_fraction=holdout_fraction,
+            random_state=random_state,
+        )
+        meta = salad_split_metadata(
+            train_df,
+            benchmark_df,
+            holdout_fraction=holdout_fraction,
+            random_state=random_state,
+        )
+        logger.info("Salad leakage check: %s", meta["leakage_check"])
+        return train_df, benchmark_df, meta
+
+    if salad_in_train:
+        train_df = full_df.copy()
+        train_df["source"] = SALAD_TRAIN_SOURCE
+        return train_df, None, {"mode": "salad_train_only", "train_pool_rows": len(train_df)}
+
+    return None, None, {}
+
+
 def ingest_training_data(
     config: dict,
     *,
     target_samples: int,
     raw_dir: Path,
     curated_dir: Path,
+    salad_train_df: pd.DataFrame | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, list[str], dict[str, Path]]:
     artifacts: dict[str, Path] = {}
     frames: list[pd.DataFrame] = []
 
     for name in config["datasets"]["train"]:
+        if name == "salad-data":
+            continue
+
         loader = TRAIN_LOADERS.get(name)
         if loader is None:
             logger.warning("Unknown training dataset: %s", name)
@@ -60,6 +115,17 @@ def ingest_training_data(
         artifacts[name] = dataset_path
         frames.append(df)
         logger.info("Saved %s rows to %s", len(df), dataset_path)
+
+    if salad_train_df is not None and not salad_train_df.empty:
+        salad_train_path = curated_dir / "salad-data_train_normalized.parquet"
+        salad_train_df.to_parquet(salad_train_path, index=False)
+        artifacts["salad-data_train"] = salad_train_path
+        frames.append(salad_train_df)
+        logger.info(
+            "Added Salad train pool: %s rows (%s)",
+            len(salad_train_df),
+            salad_train_df["attack_type"].nunique(),
+        )
 
     if not frames:
         raise RuntimeError("No training datasets ingested. Check config and HF access.")
@@ -104,22 +170,28 @@ def ingest_benchmarks(
     *,
     raw_dir: Path,
     curated_dir: Path,
+    preloaded: dict[str, pd.DataFrame] | None = None,
 ) -> dict[str, Path]:
     benchmarks_dir = curated_dir / "benchmarks"
     benchmarks_dir.mkdir(parents=True, exist_ok=True)
     artifacts: dict[str, Path] = {}
+    preloaded = preloaded or {}
 
     for name in config["datasets"].get("eval_held_out", []):
-        loader = BENCHMARK_LOADERS.get(name)
-        if loader is None:
-            logger.warning("Unknown benchmark dataset: %s", name)
-            continue
+        if name in preloaded:
+            df = preloaded[name]
+            logger.info("Using pre-split held-out benchmark: %s (%s rows)", name, len(df))
+        else:
+            loader = BENCHMARK_LOADERS.get(name)
+            if loader is None:
+                logger.warning("Unknown benchmark dataset: %s", name)
+                continue
 
-        logger.info("Ingesting held-out benchmark: %s", name)
-        dataset_raw_dir = raw_dir / name
-        df = loader(dataset_raw_dir)
-        df = clean_dataframe(df)
-        df = add_token_counts(df)
+            logger.info("Ingesting held-out benchmark: %s", name)
+            dataset_raw_dir = raw_dir / name
+            df = loader(dataset_raw_dir)
+            df = clean_dataframe(df)
+            df = add_token_counts(df)
 
         benchmark_path = benchmarks_dir / f"{name}_normalized.parquet"
         df.to_parquet(benchmark_path, index=False)
@@ -149,11 +221,17 @@ def main() -> None:
     curated_dir.mkdir(parents=True, exist_ok=True)
     registry_dir.mkdir(parents=True, exist_ok=True)
 
+    salad_train_df, salad_benchmark_df, salad_split_info = _prepare_salad_frames(
+        config,
+        raw_dir=raw_dir,
+    )
+
     before_pool, train_df, mitigation_actions, train_artifacts = ingest_training_data(
         config,
         target_samples=target_samples,
         raw_dir=raw_dir,
         curated_dir=curated_dir,
+        salad_train_df=salad_train_df,
     )
 
     splits_dir = curated_dir / "splits"
@@ -173,10 +251,16 @@ def main() -> None:
     val_split.to_parquet(val_path, index=False)
     test_split.to_parquet(test_path, index=False)
 
+    preloaded_benchmarks = (
+        {"salad-data": salad_benchmark_df}
+        if salad_benchmark_df is not None
+        else None
+    )
     benchmark_artifacts = ingest_benchmarks(
         config,
         raw_dir=raw_dir,
         curated_dir=curated_dir,
+        preloaded=preloaded_benchmarks,
     )
 
     all_artifacts = {
@@ -212,6 +296,7 @@ def main() -> None:
                 "train": config["datasets"]["train"],
                 "eval_held_out": config["datasets"].get("eval_held_out", []),
             },
+            "salad_split": salad_split_info,
             "bias_report_path": str(bias_path.relative_to(PROJECT_ROOT)),
         },
     )

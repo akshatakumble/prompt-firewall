@@ -1,18 +1,19 @@
 policy_version: "v1.0"
-model_version: "v1.0"
+model_version: "v2.0"
 dataset_version: "v1.0"
 
 thresholds:
-  allow_max: 0.30
-  sanitize_max: 0.70
-  block_min: 0.70
-  near_miss_min: 0.55
+  allow_max: 0.50
+  sanitize_min: 0.50
+  sanitize_max: 0.80
+  block_min: 0.80
+  near_miss_min: 0.45
 
 classifier:
   model_name: "distilbert-base-uncased"
   model_path: "models/classifier-v1"
   fallback_mode: "rules_only"
-  max_length: 256
+  max_length: 128
 
 training:
   epochs: 2
@@ -37,8 +38,13 @@ llm:
 datasets:
   train:
     - wildjailbreak
+    - salad-data
   eval_held_out:
     - salad-data
+  # When salad-data is in both train and eval_held_out, ingest splits it once:
+  # 80% -> training pool (then train/val/test), 20% -> locked benchmark eval.
+  salad_holdout_fraction: 0.20
+  salad_split_seed: 42
   target_samples: 60000
   balance_labels: true
   splits:

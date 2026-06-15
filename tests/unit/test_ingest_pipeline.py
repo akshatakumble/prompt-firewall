@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 import pandas as pd
-import pytest
 
 from firewall.data.bias_report import build_bias_report
 from firewall.data.cleaning import add_token_counts, clean_dataframe

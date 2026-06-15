@@ -59,5 +59,38 @@ jobs:
             echo "Skipping eval smoke test — missing model or benchmark data."
           fi
 
+      - name: Regression gate
+        run: |
+          if [ -f reports/eval_salad-data.json ]; then
+            python scripts/eval_regression_gate.py --min-recall 0.50 --max-fpr 0.15
+          else
+            echo "Skipping regression gate — no eval report."
+          fi
+
+      - name: Bias detection (classifier slices)
+        run: |
+          if [ -f models/classifier-v1/config.json ] && [ -f data/curated/v1.0/benchmarks/salad-data_normalized.parquet ]; then
+            python scripts/bias_detection.py \
+              --config config/app.yaml \
+              --parquet data/curated/v1.0/benchmarks/salad-data_normalized.parquet \
+              --output data/bias/bias_report_classifier.json
+          else
+            echo "Skipping bias detection — missing model or benchmark data."
+          fi
+
       - name: Lint model code
-        run: ruff check src/firewall/training pipelines/train_classifier.py pipelines/evaluate_firewall.py scripts/bias_detection.py
+        run: ruff check src/firewall/training pipelines/train_classifier.py pipelines/evaluate_firewall.py scripts/bias_detection.py scripts/eval_regression_gate.py
+
+      - name: Upload pipeline artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-pipeline-artifacts
+          if-no-files-found: ignore
+          path: |
+            reports/eval_salad-data.json
+            reports/regression_gate.json
+            reports/train_metrics.json
+            reports/bias_report.json
+            data/bias/bias_report_classifier.json
+            models/classifier-v1/selection.json

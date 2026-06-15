@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from sqlalchemy import Column, DateTime, Float, Integer, String, Text, create_engine
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from firewall.config import PROJECT_ROOT, get_settings
 from firewall.telemetry.redact import hash_prompt, redact_pii

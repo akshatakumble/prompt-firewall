@@ -6,11 +6,13 @@ stages:
       - src/firewall/data/normalizers.py
       - src/firewall/data/cleaning.py
       - src/firewall/data/sampling.py
+      - src/firewall/data/salad_split.py
       - src/firewall/data/manifest.py
       - src/firewall/data/bias_report.py
       - config/app.yaml
     outs:
       - data/curated/v1.0/wildjailbreak_normalized.parquet
+      - data/curated/v1.0/salad-data_train_normalized.parquet
       - data/curated/v1.0/training_combined.parquet
       - data/curated/v1.0/benchmarks/salad-data_normalized.parquet
       - data/curated/v1.0/splits/train.parquet
@@ -46,11 +48,21 @@ stages:
       - data/bias/bias_report_classifier.json
 
   evaluate:
-    cmd: python pipelines/evaluate_firewall.py --config config/app.yaml --benchmark salad-data --skip-shap
+    cmd: >
+      python pipelines/evaluate_firewall.py --config config/app.yaml --benchmark salad-data --skip-shap
+      && python scripts/eval_regression_gate.py
+      && python scripts/bias_detection.py
+      --config config/app.yaml
+      --parquet data/curated/v1.0/benchmarks/salad-data_normalized.parquet
+      --output data/bias/bias_report_classifier.json
     deps:
       - pipelines/evaluate_firewall.py
+      - scripts/eval_regression_gate.py
+      - scripts/bias_detection.py
       - models/classifier-v1
       - data/curated/v1.0/benchmarks/salad-data_normalized.parquet
     outs:
       - reports/eval_salad-data.json
+      - reports/regression_gate.json
       - reports/figures
+      - data/bias/bias_report_classifier.json

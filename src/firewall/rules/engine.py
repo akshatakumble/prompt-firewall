@@ -22,6 +22,18 @@ class RuleResult:
     def triggered_rule_ids(self) -> list[str]:
         return [m.rule_id for m in self.matches]
 
+    @property
+    def hard_rule_fired(self) -> bool:
+        return any(m.severity == "high" for m in self.matches)
+
+    @property
+    def soft_rule_fired(self) -> bool:
+        return any(m.severity in {"medium", "low"} for m in self.matches)
+
+    @property
+    def any_rule_fired(self) -> bool:
+        return bool(self.matches)
+
 
 class RuleEngine:
     def __init__(self, rules_config: dict[str, Any]) -> None:

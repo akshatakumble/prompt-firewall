@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
-from scripts.ge_runner import REQUIRED_COLUMNS, VALID_LABELS, run_validation, write_artifacts
+from scripts.ge_runner import run_validation, write_artifacts
 
 
 @pytest.fixture

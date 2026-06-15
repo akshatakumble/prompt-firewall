@@ -1,11 +1,21 @@
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 
 from firewall.config import ClassifierConfig, PROJECT_ROOT
 
 logger = logging.getLogger(__name__)
+
+
+def _load_operating_threshold(model_path: Path) -> float:
+    selection_path = model_path / "selection.json"
+    if selection_path.exists():
+        with open(selection_path, encoding="utf-8") as handle:
+            data = json.load(handle)
+        return float(data.get("threshold", 0.5))
+    return 0.5
 
 
 class ClassifierScorer:
@@ -16,6 +26,7 @@ class ClassifierScorer:
         self._model = None
         self._tokenizer = None
         self._loaded = False
+        self.operating_threshold = _load_operating_threshold(PROJECT_ROOT / config.model_path)
         self._load_model()
 
     def _load_model(self) -> None:
@@ -23,7 +34,6 @@ class ClassifierScorer:
         try:
             if model_path.exists():
                 from transformers import AutoModelForSequenceClassification, AutoTokenizer
-                import torch
 
                 self._tokenizer = AutoTokenizer.from_pretrained(model_path)
                 self._model = AutoModelForSequenceClassification.from_pretrained(model_path)
@@ -45,6 +55,8 @@ class ClassifierScorer:
     def score(self, text: str) -> float:
         if self._loaded and self._model is not None and self._tokenizer is not None:
             return self._score_with_model(text)
+        if self.config.fallback_mode == "rules_only":
+            return 0.0
         return self._heuristic_score(text)
 
     def _score_with_model(self, text: str) -> float:
