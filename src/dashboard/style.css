@@ -1,0 +1,64 @@
+/* Prompt Firewall dashboard — supplemental styling.
+   Kept minimal and theme-neutral so it works in both light and dark mode.
+   Verdict colors live in formatters.py; this file is layout polish only. */
+
+/* tighten the top padding so the header sits higher */
+.block-container {
+    padding-top: 2.2rem;
+    padding-bottom: 3rem;
+}
+
+/* metric cards: subtle bordered container that reads on any background */
+div[data-testid="stMetric"] {
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: rgba(128, 128, 128, 0.04);
+}
+
+div[data-testid="stMetricLabel"] {
+    opacity: 0.7;
+    font-size: 13px;
+}
+
+/* sidebar status block */
+.status-line {
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+.dot-online  { background: #639922; box-shadow: 0 0 0 3px rgba(99, 153, 34, 0.18); }
+.dot-offline { background: #E24B4A; box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.18); }
+
+/* near-miss cards — amber accent on a translucent base */
+.near-miss {
+    border: 1px solid rgba(239, 159, 39, 0.55);
+    border-left: 4px solid #EF9F27;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    background: rgba(239, 159, 39, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.near-miss-text { font-size: 13px; flex: 1; opacity: 0.9; }
+.near-miss-score { font-size: 13px; font-weight: 700; color: #B26A00; white-space: nowrap; }
+.near-miss-hash { font-size: 10px; opacity: 0.5; font-family: monospace; }
+
+/* chat verdict header inside the assistant message */
+.verdict-head {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+.verdict-meta { font-size: 11px; opacity: 0.65; margin-top: 6px; }

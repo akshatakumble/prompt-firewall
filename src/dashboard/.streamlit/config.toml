@@ -1,0 +1,20 @@
+[theme]
+# Base theme; users can switch light/dark from the ☰ menu. Charts and custom
+# CSS are theme-neutral so both render correctly.
+base = "light"
+primaryColor = "#185FA5"
+font = "sans serif"
+
+[client]
+# Page modules live in views/ (not pages/) so Streamlit's native multipage nav
+# never auto-detects them — we provide our own st.radio nav in app.py. This flag
+# is a belt-and-suspenders guard (only loads when run from this directory).
+showSidebarNavigation = false
+showErrorDetails = true
+
+[server]
+headless = true
+port = 8501
+
+[browser]
+gatherUsageStats = false
