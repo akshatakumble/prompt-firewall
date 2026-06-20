@@ -17,7 +17,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from utils import api_client
+from utils import api_client, theme
 from utils.formatters import VERDICT_COLORS, delta_pct, fmt_rules
 
 REFRESH_SECS = 30
@@ -45,7 +45,7 @@ def _donut(decisions: dict[str, int]) -> go.Figure:
         annotations=[dict(text=f"<b>{total:,}</b><br>requests",
                           x=0.5, y=0.5, showarrow=False, font_size=14)],
     )
-    return fig
+    return theme.style_plotly(fig)
 
 
 def _rules_chart(top_rules: list[dict]) -> go.Figure:
@@ -70,7 +70,7 @@ def _rules_chart(top_rules: list[dict]) -> go.Figure:
         xaxis=dict(showgrid=True, gridcolor="rgba(128,128,128,0.2)"),
         yaxis=dict(showgrid=False),
     )
-    return fig
+    return theme.style_plotly(fig)
 
 
 def _hourly_chart(hourly: list[dict]) -> go.Figure:
@@ -92,7 +92,7 @@ def _hourly_chart(hourly: list[dict]) -> go.Figure:
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor="rgba(128,128,128,0.2)"),
     )
-    return fig
+    return theme.style_plotly(fig)
 
 
 # ── render ───────────────────────────────────────────────────────────────────
@@ -145,12 +145,12 @@ def render() -> None:
     with left:
         st.markdown("**Decision distribution**")
         st.plotly_chart(_donut(decisions), use_container_width=True,
-                        theme="streamlit", config={"displayModeBar": False})
+                        theme=None, config={"displayModeBar": False})
     with right:
         st.markdown("**Top rule triggers (last 24h)**")
         if top_rules:
             st.plotly_chart(_rules_chart(top_rules), use_container_width=True,
-                            theme="streamlit", config={"displayModeBar": False})
+                            theme=None, config={"displayModeBar": False})
         else:
             st.info("No rules triggered yet.")
 
@@ -160,7 +160,7 @@ def render() -> None:
     st.markdown("**Hourly request volume** — stacked by decision")
     if hourly:
         st.plotly_chart(_hourly_chart(hourly), use_container_width=True,
-                        theme="streamlit", config={"displayModeBar": False})
+                        theme=None, config={"displayModeBar": False})
     else:
         st.info("Not enough event history to build an hourly breakdown yet.")
 
@@ -213,7 +213,7 @@ def _events_table(events: list[dict]) -> None:
         })
     df = pd.DataFrame(rows)
     st.dataframe(
-        df, use_container_width=True, hide_index=True, height=380,
+        theme.style_table(df.style), use_container_width=True, hide_index=True, height=380,
         column_config={
             "Risk score": st.column_config.ProgressColumn(
                 "Risk score", min_value=0.0, max_value=1.0, format="%.3f"

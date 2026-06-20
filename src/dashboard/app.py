@@ -19,7 +19,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from utils import api_client
+from utils import api_client, theme
 from utils.formatters import VERDICT_COLORS
 
 st.set_page_config(
@@ -37,6 +37,9 @@ def _inject_css() -> None:
     if css_path.exists():
         st.markdown(f"<style>{css_path.read_text(encoding='utf-8')}</style>",
                     unsafe_allow_html=True)
+    # dark skin layered on top when the sidebar toggle is on (key persists across runs)
+    if st.session_state.get("dark_mode"):
+        st.markdown(f"<style>{theme.dark_css()}</style>", unsafe_allow_html=True)
 
 
 def _init_state() -> None:
@@ -113,6 +116,8 @@ def _render_sidebar() -> str:
             )
 
         st.divider()
+        st.toggle("🌙 Dark mode", key="dark_mode",
+                  help="Switch the dashboard between light and dark.")
         st.caption(f"API: `{os.getenv('FIREWALL_API_URL', api_client.API_URL)}`")
 
     return page

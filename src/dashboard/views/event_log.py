@@ -11,7 +11,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from utils import api_client
+from utils import api_client, theme
 from utils.formatters import VERDICT_COLORS, fmt_rules
 
 
@@ -95,7 +95,7 @@ def render() -> None:
     # ── colored table ────────────────────────────────────────────────────────
     display = df.drop(columns=["Request ID", "Prompt hash"])
     styled = (
-        display.style
+        theme.style_table(display.style)
         .map(lambda v: _decision_bg(v) if v in VERDICT_COLORS else "", subset=["Decision"])
         .format({"Risk score": "{:.3f}"})
     )

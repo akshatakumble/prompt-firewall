@@ -58,7 +58,7 @@ def render() -> None:
         value=st.session_state.get("auto_refresh", True),
         help="Applies to the Analytics page while it is open.",
     )
-    st.caption("Theme (light/dark) follows your Streamlit setting — change it from the ☰ menu → Settings.")
+    st.caption("Switch light/dark anytime with the **🌙 Dark mode** toggle at the bottom of the sidebar.")
 
     st.divider()
 
