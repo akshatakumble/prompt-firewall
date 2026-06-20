@@ -1,0 +1,34 @@
+# Streamlit dashboard image for Cloud Run.
+# Lean — the dashboard only calls the API over HTTP, so no torch/ML deps.
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY src/dashboard/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src/dashboard/ /app/dashboard/
+
+# Run from the dashboard dir so its .streamlit/config.toml is picked up and
+# `from utils import ...` / `from views import ...` resolve.
+WORKDIR /app/dashboard
+
+ENV PYTHONUNBUFFERED=1 \
+    FIREWALL_API_URL=https://prompt-firewall-api-232758017860.us-central1.run.app
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -fsS "http://localhost:${PORT:-8080}/_stcore/health" || exit 1
+
+# Cloud Run injects $PORT; bind Streamlit to it. CLI flags override config.toml.
+CMD streamlit run app.py \
+    --server.port=${PORT:-8080} \
+    --server.address=0.0.0.0 \
+    --server.headless=true \
+    --server.enableCORS=false \
+    --server.enableXsrfProtection=false

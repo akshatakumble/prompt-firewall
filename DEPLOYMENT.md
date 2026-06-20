@@ -20,6 +20,20 @@ automated retraining** (Section 5) for the Prompt Firewall.
 > fresh machine — ideal for the demo. The same image runs on GKE unchanged if
 > needed later.
 
+## Live deployment
+
+Two Cloud Run services (both public, scale-to-zero):
+
+| Service | URL |
+|---------|-----|
+| **API** (FastAPI firewall) | https://prompt-firewall-api-232758017860.us-central1.run.app |
+| **Dashboard** (Streamlit UI) | https://prompt-firewall-dashboard-d7wtbhevna-uc.a.run.app |
+
+The API serves the real fine-tuned DistilBERT v2 classifier (pulled from
+`gs://…/models/v2` at startup); the dashboard talks to it via `FIREWALL_API_URL`.
+The LLM runs in **mock mode** until a working `GROQ_API_KEY` is set in Secret
+Manager (see *Enable real LLM responses* below).
+
 ---
 
 ## Architecture
@@ -154,10 +168,34 @@ curl -s -X POST "$URL/chat" -H 'Content-Type: application/json' \
 The deploy workflow also runs this `/health` smoke test automatically and prints the
 service URL in the job summary.
 
-Point the Streamlit dashboard at the deployed API:
+Point the Streamlit dashboard at the deployed API locally:
 
 ```bash
 FIREWALL_API_URL="$URL" streamlit run src/dashboard/app.py
+```
+
+### Step 5 — deploy the dashboard UI (second Cloud Run service)
+
+```bash
+gcloud builds submit --config cloudbuild.dashboard.yaml \
+  --substitutions=SHORT_SHA=$(git rev-parse --short HEAD),_API_URL="$URL" \
+  --project=prompt-firewall-mlops
+# → deploys service `prompt-firewall-dashboard`, wired to the API via FIREWALL_API_URL
+```
+
+Uses `docker/Dockerfile.dashboard.cloudrun` (lean — no ML deps, just Streamlit).
+
+### Enable real LLM responses
+
+The API ships in mock-LLM mode (firewall verdicts are fully real). To get live
+LLaMA-3.1 responses, set a working Groq key and flip the provider — **run in your
+own terminal so the key never enters a file or chat**:
+
+```bash
+printf '%s' 'gsk_your_working_key' | gcloud secrets versions add groq-api-key \
+  --data-file=- --project=prompt-firewall-mlops
+gcloud run services update prompt-firewall-api --region=us-central1 \
+  --project=prompt-firewall-mlops --set-env-vars=VICTIM_LLM_PROVIDER=groq
 ```
 
 ### Rollback

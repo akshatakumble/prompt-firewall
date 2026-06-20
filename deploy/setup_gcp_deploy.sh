@@ -106,6 +106,15 @@ gcloud iam service-accounts add-iam-policy-binding "${RUNTIME_SA_EMAIL}" \
   --member="serviceAccount:${DEPLOYER_SA_EMAIL}" \
   --role="roles/iam.serviceAccountUser" >/dev/null
 
+# Cloud Build executes build steps as the project's *Compute Engine default SA*,
+# not the deployer SA. So that identity also needs run.admin + actAs the runtime
+# SA, or the in-build `gcloud run deploy` step fails with iam.serviceAccounts.actAs.
+COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${COMPUTE_SA}" --role="roles/run.admin" --condition=None >/dev/null
+gcloud iam service-accounts add-iam-policy-binding "${RUNTIME_SA_EMAIL}" \
+  --member="serviceAccount:${COMPUTE_SA}" --role="roles/iam.serviceAccountUser" >/dev/null
+
 # ── 5. Workload Identity Federation (keyless GitHub → GCP) ───────────────────
 echo "==> Ensuring Workload Identity pool: ${POOL}"
 gcloud iam workload-identity-pools describe "${POOL}" --location=global >/dev/null 2>&1 || \
