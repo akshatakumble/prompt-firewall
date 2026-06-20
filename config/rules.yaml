@@ -19,7 +19,7 @@ rules:
 
   - id: roleplay_override
     name: "Roleplay override"
-    pattern: "(?i)(you are now|act as|pretend to be|roleplay as)\\s+(an?\\s+)?(unrestricted|evil|malicious|uncensored)"
+    pattern: "(?i)(you are now|act as|pretend to be|pretend you'?re|pretend you are|roleplay as)\\s+(an?\\s+)?(unrestricted|evil|malicious|uncensored)"
     severity: medium
     score_boost: 0.65
 

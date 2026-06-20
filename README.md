@@ -124,6 +124,18 @@ Enable GCS only if you want shared cloud storage for large artifacts:
 3. Uncomment `gcsfs` / `dvc[gs]` in `requirements-docker.txt`
 4. Run: `dvc remote modify --local localstorage remote gcsremote` (or set `core.remote = gcsremote`)
 
+## Cloud deployment, monitoring & retraining
+
+The model is deployed to **GCP Cloud Run** with keyless GitHub Actions CI/CD
+(Workload Identity Federation), scheduled drift/decay monitoring, and automated
+threshold-triggered retraining. See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the
+full architecture and step-by-step replication.
+
+```bash
+bash deploy/setup_gcp_deploy.sh          # one-time GCP provisioning
+# set the printed GitHub repo variables, then push to main → auto-deploys
+```
+
 ## Makefile targets
 
 | Target | Description |

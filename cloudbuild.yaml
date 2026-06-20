@@ -1,0 +1,67 @@
+# Cloud Build pipeline: build the API image, push it to Artifact Registry, and
+# deploy it to Cloud Run. Invoked by the GitHub Actions deploy workflow
+# (.github/workflows/deploy.yml) and runnable manually:
+#
+#   gcloud builds submit --config cloudbuild.yaml \
+#       --substitutions=_REGION=us-central1,_SERVICE=prompt-firewall-api,SHORT_SHA=manual
+#
+substitutions:
+  _REGION: us-central1
+  _REPO: prompt-firewall-models
+  _SERVICE: prompt-firewall-api
+  _MODEL_GCS_URI: gs://prompt-firewall-mlops-dvc/models/v2
+  _RUNTIME_SA: prompt-firewall-run@${PROJECT_ID}.iam.gserviceaccount.com
+
+images:
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:${SHORT_SHA}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+steps:
+  # 1. Build (tagged with the commit SHA and :latest)
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - docker/Dockerfile.cloudrun
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:${SHORT_SHA}
+      - -t
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:latest
+      - .
+
+  # 2. Push both tags
+  - id: push-sha
+    name: gcr.io/cloud-builders/docker
+    args: [push, "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:${SHORT_SHA}"]
+  - id: push-latest
+    name: gcr.io/cloud-builders/docker
+    args: [push, "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:latest"]
+
+  # 3. Deploy to Cloud Run.
+  #    GROQ_API_KEY is read from Secret Manager (secret: groq-api-key) and surfaced
+  #    as an env var; if the secret is absent the LLM falls back to mock mode.
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_SERVICE}:${SHORT_SHA}
+      - --region=${_REGION}
+      - --platform=managed
+      - --service-account=${_RUNTIME_SA}
+      - --allow-unauthenticated
+      - --port=8080
+      - --cpu=2
+      - --memory=2Gi
+      - --min-instances=0
+      - --max-instances=4
+      - --timeout=120
+      - --set-env-vars=MODEL_GCS_URI=${_MODEL_GCS_URI},MODEL_LOCAL_DIR=/app/models/classifier-v1,VICTIM_LLM_PROVIDER=groq,DATABASE_URL=sqlite:////tmp/firewall.db
+      - --update-secrets=GROQ_API_KEY=groq-api-key:latest

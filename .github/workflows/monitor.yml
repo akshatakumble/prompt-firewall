@@ -1,0 +1,89 @@
+name: Monitor & Auto-Retrain
+
+# Section 5 — scheduled production monitoring.
+# Pulls live telemetry from the deployed Cloud Run service, runs drift/decay
+# detection (scripts/monitor_drift.py), and — if drift crosses the alert
+# threshold — invokes the reusable retrain workflow automatically.
+#
+# Set repo variable FIREWALL_API_URL to your Cloud Run URL after the first
+# deploy. If unset, the job runs in demo mode against tests/monitoring/sample
+# telemetry so the pipeline is always demonstrable.
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch:
+    inputs:
+      force_retrain:
+        description: "Force retrain regardless of drift"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    outputs:
+      drift: ${{ steps.drift.outputs.drift }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install monitoring deps
+        run: pip install requests numpy pyyaml
+
+      # Persist the drift reference baseline across scheduled runs.
+      - name: Restore drift reference baseline
+        uses: actions/cache@v4
+        with:
+          path: reports/monitoring/reference.json
+          key: drift-reference-v1
+
+      - name: Run drift / decay detection
+        id: drift
+        env:
+          FIREWALL_API_URL: ${{ vars.FIREWALL_API_URL }}
+        run: |
+          if [ -n "$FIREWALL_API_URL" ]; then
+            echo "Monitoring live endpoint: $FIREWALL_API_URL"
+            python scripts/monitor_drift.py --api-url "$FIREWALL_API_URL"
+          else
+            echo "::warning::FIREWALL_API_URL not set — demo mode on sample telemetry."
+            # Establish the baseline, then evaluate a drifted window so the full
+            # monitoring → auto-retrain loop is demonstrated deterministically.
+            python scripts/monitor_drift.py --events-file tests/monitoring/baseline_events.json --update-reference
+            python scripts/monitor_drift.py --events-file tests/monitoring/current_events.json
+          fi
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: reports/monitoring/
+          if-no-files-found: ignore
+
+      - name: Job summary
+        if: always()
+        run: |
+          echo "## Drift / decay monitoring" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat reports/monitoring/drift_report.json >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || echo "{}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+  # Reusable retrain workflow runs automatically when drift is detected
+  # (or when a manual run sets force_retrain=true). Called via `uses:` so it is
+  # not subject to the GITHUB_TOKEN cross-workflow-dispatch restriction.
+  auto-retrain:
+    needs: monitor
+    if: ${{ needs.monitor.outputs.drift == 'true' || github.event.inputs.force_retrain == 'true' }}
+    uses: ./.github/workflows/retrain.yml
+    secrets: inherit
+    with:
+      reason: "drift detected by scheduled monitoring"

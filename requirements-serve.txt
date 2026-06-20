@@ -1,0 +1,17 @@
+# Lean runtime deps for the Cloud Run API image.
+# (torch CPU is installed separately in docker/Dockerfile.cloudrun to pin the
+#  CPU-only wheel index and keep the image small — do not add torch here.)
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+pyyaml>=6.0
+httpx>=0.27.0
+sqlalchemy>=2.0.0
+prometheus-client>=0.20.0
+python-dotenv>=1.0.0
+transformers>=4.38.0
+huggingface-hub>=0.30.0,<1.0
+numpy>=1.26.4,<2
+cachetools>=5.3.0
+google-cloud-storage>=2.14.0

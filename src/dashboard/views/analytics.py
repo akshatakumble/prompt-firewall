@@ -18,7 +18,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from utils import api_client
-from utils.formatters import VERDICT_COLORS, delta_pct, fmt_rules, verdict_badge
+from utils.formatters import VERDICT_COLORS, delta_pct, fmt_rules
 
 REFRESH_SECS = 30
 

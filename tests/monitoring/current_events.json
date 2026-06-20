@@ -1,0 +1,2452 @@
+[
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-0",
+  "injection_risk_score": 0.189,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 47
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-1",
+  "injection_risk_score": 0.561,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 84
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-2",
+  "injection_risk_score": 0.148,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 78
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-3",
+  "injection_risk_score": 0.709,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 47
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-4",
+  "injection_risk_score": 0.848,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-5",
+  "injection_risk_score": 0.01,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-6",
+  "injection_risk_score": 0.754,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 64
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-7",
+  "injection_risk_score": 0.522,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 44
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-8",
+  "injection_risk_score": 0.733,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 55
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-9",
+  "injection_risk_score": 0.309,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 83
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-10",
+  "injection_risk_score": 0.534,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 76
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-11",
+  "injection_risk_score": 0.879,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 67
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-12",
+  "injection_risk_score": 0.519,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 81
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-13",
+  "injection_risk_score": 0.34,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 71
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-14",
+  "injection_risk_score": 0.384,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 80
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-15",
+  "injection_risk_score": 0.898,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 49
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-16",
+  "injection_risk_score": 0.523,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 81
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-17",
+  "injection_risk_score": 0.323,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 74
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-18",
+  "injection_risk_score": 0.899,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 86
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-19",
+  "injection_risk_score": 0.59,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 55
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-20",
+  "injection_risk_score": 0.835,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 68
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-21",
+  "injection_risk_score": 0.186,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 79
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-22",
+  "injection_risk_score": 0.594,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 71
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-23",
+  "injection_risk_score": 0.851,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 53
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-24",
+  "injection_risk_score": 0.476,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 57
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-25",
+  "injection_risk_score": 0.939,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 57
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-26",
+  "injection_risk_score": 0.645,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 52
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-27",
+  "injection_risk_score": 0.288,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 71
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-28",
+  "injection_risk_score": 0.567,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 70
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-29",
+  "injection_risk_score": 0.637,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 90
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-30",
+  "injection_risk_score": 0.118,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 65
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-31",
+  "injection_risk_score": 0.586,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 77
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-32",
+  "injection_risk_score": 0.505,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 62
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-33",
+  "injection_risk_score": 0.525,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 61
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-34",
+  "injection_risk_score": 0.495,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-35",
+  "injection_risk_score": 0.048,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 52
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-36",
+  "injection_risk_score": 0.297,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-37",
+  "injection_risk_score": 0.554,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 87
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-38",
+  "injection_risk_score": 0.522,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-39",
+  "injection_risk_score": 0.478,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 46
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-40",
+  "injection_risk_score": 0.87,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-41",
+  "injection_risk_score": 0.006,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 74
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-42",
+  "injection_risk_score": 0.018,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 43
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-43",
+  "injection_risk_score": 0.695,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 48
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-44",
+  "injection_risk_score": 0.711,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 46
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-45",
+  "injection_risk_score": 0.918,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 70
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-46",
+  "injection_risk_score": 0.484,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 43
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-47",
+  "injection_risk_score": 0.345,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 47
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-48",
+  "injection_risk_score": 0.888,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 44
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-49",
+  "injection_risk_score": 0.692,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 49
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-50",
+  "injection_risk_score": 0.225,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-51",
+  "injection_risk_score": 0.099,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 75
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-52",
+  "injection_risk_score": 0.923,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 90
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-53",
+  "injection_risk_score": 0.717,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 64
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-54",
+  "injection_risk_score": 0.494,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 77
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-55",
+  "injection_risk_score": 0.872,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 79
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-56",
+  "injection_risk_score": 0.384,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 46
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-57",
+  "injection_risk_score": 0.855,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 53
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-58",
+  "injection_risk_score": 0.032,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 55
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-59",
+  "injection_risk_score": 0.03,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 40
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-60",
+  "injection_risk_score": 0.519,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 70
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-61",
+  "injection_risk_score": 0.093,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 85
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-62",
+  "injection_risk_score": 0.344,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 44
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-63",
+  "injection_risk_score": 0.759,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 90
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-64",
+  "injection_risk_score": 0.92,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 52
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-65",
+  "injection_risk_score": 0.504,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 81
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-66",
+  "injection_risk_score": 0.106,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 49
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-67",
+  "injection_risk_score": 0.066,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-68",
+  "injection_risk_score": 0.731,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 58
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-69",
+  "injection_risk_score": 0.497,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-70",
+  "injection_risk_score": 0.764,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 72
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-71",
+  "injection_risk_score": 0.494,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 78
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-72",
+  "injection_risk_score": 0.173,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 60
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-73",
+  "injection_risk_score": 0.507,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 54
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-74",
+  "injection_risk_score": 0.962,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 76
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-75",
+  "injection_risk_score": 0.506,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-76",
+  "injection_risk_score": 0.575,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 42
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-77",
+  "injection_risk_score": 0.85,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 73
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-78",
+  "injection_risk_score": 0.757,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 51
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-79",
+  "injection_risk_score": 0.894,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 71
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-80",
+  "injection_risk_score": 0.9,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 66
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-81",
+  "injection_risk_score": 0.268,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 50
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-82",
+  "injection_risk_score": 0.277,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 58
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-83",
+  "injection_risk_score": 0.612,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-84",
+  "injection_risk_score": 0.627,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 60
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-85",
+  "injection_risk_score": 0.046,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 89
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-86",
+  "injection_risk_score": 0.501,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 40
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-87",
+  "injection_risk_score": 0.652,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 66
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-88",
+  "injection_risk_score": 0.207,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 79
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-89",
+  "injection_risk_score": 0.926,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-90",
+  "injection_risk_score": 0.107,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 48
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-91",
+  "injection_risk_score": 0.894,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 84
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-92",
+  "injection_risk_score": 0.453,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 80
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-93",
+  "injection_risk_score": 0.567,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 50
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-94",
+  "injection_risk_score": 0.005,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 66
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-95",
+  "injection_risk_score": 0.397,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 47
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-96",
+  "injection_risk_score": 0.462,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 49
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-97",
+  "injection_risk_score": 0.522,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 72
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-98",
+  "injection_risk_score": 0.616,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 70
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-99",
+  "injection_risk_score": 0.861,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 75
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-100",
+  "injection_risk_score": 0.076,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 78
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-101",
+  "injection_risk_score": 0.538,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 44
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-102",
+  "injection_risk_score": 0.316,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 66
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-103",
+  "injection_risk_score": 0.315,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 57
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-104",
+  "injection_risk_score": 0.868,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-105",
+  "injection_risk_score": 0.919,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 82
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-106",
+  "injection_risk_score": 0.465,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 74
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-107",
+  "injection_risk_score": 0.483,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-108",
+  "injection_risk_score": 0.496,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 60
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-109",
+  "injection_risk_score": 0.987,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 55
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-110",
+  "injection_risk_score": 0.565,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 89
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-111",
+  "injection_risk_score": 0.482,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 70
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-112",
+  "injection_risk_score": 0.727,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 64
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-113",
+  "injection_risk_score": 0.955,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 81
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-114",
+  "injection_risk_score": 0.904,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 42
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-115",
+  "injection_risk_score": 0.386,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 61
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-116",
+  "injection_risk_score": 0.969,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 68
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-117",
+  "injection_risk_score": 0.364,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 40
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-118",
+  "injection_risk_score": 0.89,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 81
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-119",
+  "injection_risk_score": 0.833,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 90
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-120",
+  "injection_risk_score": 0.878,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 84
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-121",
+  "injection_risk_score": 0.458,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 61
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-122",
+  "injection_risk_score": 0.966,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 64
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-123",
+  "injection_risk_score": 0.927,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 88
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-124",
+  "injection_risk_score": 0.504,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 79
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-125",
+  "injection_risk_score": 0.252,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 58
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-126",
+  "injection_risk_score": 0.947,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 67
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-127",
+  "injection_risk_score": 0.949,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 85
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-128",
+  "injection_risk_score": 0.895,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 84
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-129",
+  "injection_risk_score": 0.012,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 60
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-130",
+  "injection_risk_score": 0.87,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-131",
+  "injection_risk_score": 0.474,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 66
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-132",
+  "injection_risk_score": 0.722,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 50
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-133",
+  "injection_risk_score": 0.244,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 64
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-134",
+  "injection_risk_score": 0.567,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 77
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-135",
+  "injection_risk_score": 0.184,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 56
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-136",
+  "injection_risk_score": 0.517,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 69
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-137",
+  "injection_risk_score": 0.935,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 50
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-138",
+  "injection_risk_score": 0.378,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 77
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-139",
+  "injection_risk_score": 0.385,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 84
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-140",
+  "injection_risk_score": 0.338,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 52
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-141",
+  "injection_risk_score": 0.965,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 46
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-142",
+  "injection_risk_score": 0.229,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 76
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-143",
+  "injection_risk_score": 0.28,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 41
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-144",
+  "injection_risk_score": 0.932,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 57
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-145",
+  "injection_risk_score": 0.346,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 89
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-146",
+  "injection_risk_score": 0.828,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 78
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-147",
+  "injection_risk_score": 0.962,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 58
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-148",
+  "injection_risk_score": 0.859,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 62
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-149",
+  "injection_risk_score": 0.076,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 56
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-150",
+  "injection_risk_score": 0.702,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 82
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-151",
+  "injection_risk_score": 0.538,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 46
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-152",
+  "injection_risk_score": 0.93,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 59
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-153",
+  "injection_risk_score": 0.826,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-154",
+  "injection_risk_score": 0.835,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 58
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-155",
+  "injection_risk_score": 0.166,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 52
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-156",
+  "injection_risk_score": 0.216,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-157",
+  "injection_risk_score": 0.541,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 50
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-158",
+  "injection_risk_score": 0.33,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 70
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-159",
+  "injection_risk_score": 0.87,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 61
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-160",
+  "injection_risk_score": 0.9,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 44
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-161",
+  "injection_risk_score": 0.387,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 83
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-162",
+  "injection_risk_score": 0.987,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 75
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-163",
+  "injection_risk_score": 0.529,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 40
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-164",
+  "injection_risk_score": 0.049,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-165",
+  "injection_risk_score": 0.688,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 77
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-166",
+  "injection_risk_score": 0.514,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-167",
+  "injection_risk_score": 0.094,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 41
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-168",
+  "injection_risk_score": 0.764,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 60
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-169",
+  "injection_risk_score": 0.858,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 44
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-170",
+  "injection_risk_score": 0.63,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 84
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-171",
+  "injection_risk_score": 0.163,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 48
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-172",
+  "injection_risk_score": 0.015,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 71
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-173",
+  "injection_risk_score": 0.094,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 74
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-174",
+  "injection_risk_score": 0.181,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 82
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-175",
+  "injection_risk_score": 0.938,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 74
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-176",
+  "injection_risk_score": 0.524,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 49
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-177",
+  "injection_risk_score": 0.931,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 71
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-178",
+  "injection_risk_score": 0.763,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 57
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-179",
+  "injection_risk_score": 0.148,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 68
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-180",
+  "injection_risk_score": 0.474,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 63
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-181",
+  "injection_risk_score": 0.274,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 74
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-182",
+  "injection_risk_score": 0.93,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 43
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-183",
+  "injection_risk_score": 0.469,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 47
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-184",
+  "injection_risk_score": 0.96,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 45
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-185",
+  "injection_risk_score": 0.68,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 78
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-186",
+  "injection_risk_score": 0.829,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 61
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-187",
+  "injection_risk_score": 0.05,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 76
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-188",
+  "injection_risk_score": 0.332,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 75
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-189",
+  "injection_risk_score": 0.086,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 54
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-190",
+  "injection_risk_score": 0.059,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 78
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-12T02:00:00+00:00",
+  "request_id": "req-191",
+  "injection_risk_score": 0.343,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 49
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-13T03:00:00+00:00",
+  "request_id": "req-192",
+  "injection_risk_score": 0.912,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 51
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-14T04:00:00+00:00",
+  "request_id": "req-193",
+  "injection_risk_score": 0.347,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 48
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-15T05:00:00+00:00",
+  "request_id": "req-194",
+  "injection_risk_score": 0.316,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 55
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-16T06:00:00+00:00",
+  "request_id": "req-195",
+  "injection_risk_score": 0.504,
+  "policy_decision": "SANITIZE",
+  "triggered_rules": [
+   "roleplay_override"
+  ],
+  "latency_ms": {
+   "total": 56
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-17T07:00:00+00:00",
+  "request_id": "req-196",
+  "injection_risk_score": 0.297,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 73
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-18T08:00:00+00:00",
+  "request_id": "req-197",
+  "injection_risk_score": 0.025,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 68
+  },
+  "output_status": "ok"
+ },
+ {
+  "timestamp": "2026-06-10T00:00:00+00:00",
+  "request_id": "req-198",
+  "injection_risk_score": 0.907,
+  "policy_decision": "BLOCK",
+  "triggered_rules": [
+   "instruction_override",
+   "dan_pattern"
+  ],
+  "latency_ms": {
+   "total": 46
+  },
+  "output_status": "BLOCKED"
+ },
+ {
+  "timestamp": "2026-06-11T01:00:00+00:00",
+  "request_id": "req-199",
+  "injection_risk_score": 0.472,
+  "policy_decision": "ALLOW",
+  "triggered_rules": [],
+  "latency_ms": {
+   "total": 79
+  },
+  "output_status": "ok"
+ }
+]

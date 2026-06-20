@@ -1,0 +1,77 @@
+name: Deploy to Cloud Run
+
+# Connects the repo to GCP: deploys automatically after CI succeeds on main,
+# and can be run manually. Auth is keyless via Workload Identity Federation.
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why are you deploying manually?"
+        required: false
+        default: "manual deploy"
+
+permissions:
+  contents: read
+  id-token: write   # required for Workload Identity Federation
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only deploy when CI passed (or on a manual dispatch).
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build, push & deploy via Cloud Build
+        run: |
+          gcloud builds submit \
+            --config cloudbuild.yaml \
+            --substitutions=SHORT_SHA=${GITHUB_SHA::7},_REGION=${{ vars.GCP_REGION }},_REPO=${{ vars.GCP_ARTIFACT_REPO }},_SERVICE=${{ vars.CLOUD_RUN_SERVICE }} \
+            --project=${{ vars.GCP_PROJECT_ID }}
+
+      - name: Resolve service URL
+        id: url
+        run: |
+          URL=$(gcloud run services describe ${{ vars.CLOUD_RUN_SERVICE }} \
+            --region=${{ vars.GCP_REGION }} --project=${{ vars.GCP_PROJECT_ID }} \
+            --format='value(status.url)')
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Service URL: $URL"
+
+      - name: Smoke test /health
+        run: |
+          URL="${{ steps.url.outputs.url }}"
+          for i in $(seq 1 10); do
+            if curl -fsS "$URL/health" -o /tmp/health.json; then
+              echo "Health OK:"; cat /tmp/health.json; echo
+              break
+            fi
+            echo "Attempt $i: not ready yet, retrying in 6s..."; sleep 6
+            if [ "$i" = "10" ]; then echo "Health check failed"; exit 1; fi
+          done
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          {
+            echo "## Cloud Run deployment"
+            echo ""
+            echo "- **Service:** \`${{ vars.CLOUD_RUN_SERVICE }}\`"
+            echo "- **Region:** \`${{ vars.GCP_REGION }}\`"
+            echo "- **Image tag:** \`${GITHUB_SHA::7}\`"
+            echo "- **URL:** ${{ steps.url.outputs.url }}"
+          } >> "$GITHUB_STEP_SUMMARY"

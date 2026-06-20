@@ -1,0 +1,36 @@
+# Thresholds for production monitoring & retraining triggers (Section 5).
+# Consumed by scripts/monitor_drift.py and the monitor/retrain GitHub workflows.
+
+# ── data drift (input distribution shift) ────────────────────────────────────
+drift:
+  # Population Stability Index on the injection-risk-score distribution.
+  #   PSI < 0.10  : no significant shift
+  #   0.10–0.25   : moderate shift (warn)
+  #   > 0.25      : major shift (alert → retrain)
+  psi_warn: 0.10
+  psi_alert: 0.25
+  # L1 distance between current and reference decision proportions
+  # (ALLOW/SANITIZE/BLOCK). 0.15 = 15 percentage-points of cumulative movement.
+  decision_shift_alert: 0.15
+  # Score histogram bin edges (0..1).
+  score_bins: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  # Minimum events required before drift is evaluated (avoid noise on low traffic).
+  min_events: 50
+
+# ── operational signals ──────────────────────────────────────────────────────
+operational:
+  # Alert if the near-miss rate (allowed prompts scoring 0.45–0.55) exceeds this
+  # share of total requests — indicates the classifier is hedging near the boundary.
+  near_miss_rate_alert: 0.08
+  # Alert if average firewall latency (ms) regresses past this ceiling.
+  latency_ms_alert: 250
+
+# ── model decay (quality gate, evaluated on the locked benchmark) ────────────
+# Used by the retrain workflow's regression gate. If the deployed model's recall
+# drops below min_recall OR FPR rises above max_fpr on the held-out Salad-Data
+# benchmark, retraining is justified and a freshly trained model must clear the
+# same gate before it is published.
+decay:
+  benchmark: salad-data
+  min_recall: 0.85
+  max_fpr: 0.05

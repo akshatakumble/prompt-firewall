@@ -1,0 +1,149 @@
+name: Retrain & Republish Model
+
+# Section 5 — automated retraining pipeline.
+# Triggered three ways:
+#   • workflow_call  — invoked by monitor.yml when drift/decay is detected
+#   • workflow_dispatch — manual "Run workflow" button
+#   • schedule       — weekly safety-net retrain
+#
+# Pipeline: pull data → retrain → evaluate on locked benchmark → regression gate
+# (the decay threshold). Only if the NEW model clears the gate is it published to
+# the GCS registry and rolled out to Cloud Run. Otherwise the existing production
+# model is kept. A GitHub issue is filed as the (GitHub-native) notification.
+on:
+  workflow_call:
+    inputs:
+      reason:
+        type: string
+        default: "scheduled retrain"
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why retrain?"
+        type: string
+        default: "manual retrain"
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+
+permissions:
+  contents: read
+  id-token: write   # WIF auth to GCP
+  issues: write     # GitHub-native notification
+
+env:
+  MIN_RECALL: "0.85"
+  MAX_FPR: "0.05"
+  MODEL_VERSION: "v2"
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Notify — retraining started
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="🔁 Retraining triggered ($(date -u +%Y-%m-%dT%H:%MZ))"
+          BODY="Reason: **${{ inputs.reason || 'scheduled' }}**. Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} — training the candidate model and evaluating it against the locked Salad-Data benchmark (gate: recall >= ${MIN_RECALL}, FPR <= ${MAX_FPR})."
+          gh issue create --title "$TITLE" --body "$BODY" --label "retraining" 2>/dev/null \
+            || gh issue create --title "$TITLE" --body "$BODY" \
+            || echo "issue create skipped"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install "dvc[gs]>=3.48.0"
+
+      - name: Authenticate to GCP (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Pull training data (DVC / GCS)
+        run: |
+          python scripts/ensure_pipeline_dirs.py
+          dvc pull -q || echo "dvc pull failed or partial — steps below skip gracefully if data is missing."
+
+      - name: Retrain candidate model
+        run: |
+          if [ -f data/curated/v1.0/splits/train.parquet ]; then
+            python pipelines/train_classifier.py --config config/app.yaml --quick --epochs 2 --max-train 5000
+          else
+            echo "::warning::No training splits available; skipping retrain."
+          fi
+
+      - name: Evaluate on locked benchmark
+        run: |
+          if [ -f models/classifier-v1/config.json ] && [ -f data/curated/v1.0/benchmarks/salad-data_normalized.parquet ]; then
+            python pipelines/evaluate_firewall.py --config config/app.yaml \
+              --benchmark salad-data --max-samples 1000 --skip-shap --min-recall ${MIN_RECALL}
+          else
+            echo "::warning::Missing model or benchmark; skipping eval."
+          fi
+
+      - name: Regression / decay gate
+        id: gate
+        run: |
+          if [ -f reports/eval_salad-data.json ]; then
+            if python scripts/eval_regression_gate.py --min-recall ${MIN_RECALL} --max-fpr ${MAX_FPR}; then
+              echo "passed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "passed=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No eval report — gate cannot pass; keeping existing model."
+          fi
+
+      - name: Publish model to GCS registry (only if gate passed)
+        if: steps.gate.outputs.passed == 'true'
+        run: |
+          python scripts/push_model_gcp.py --version ${MODEL_VERSION} --model-path models/classifier-v1
+
+      - name: Roll out new model to Cloud Run
+        if: steps.gate.outputs.passed == 'true'
+        run: |
+          gcloud run services update ${{ vars.CLOUD_RUN_SERVICE }} \
+            --region=${{ vars.GCP_REGION }} --project=${{ vars.GCP_PROJECT_ID }} \
+            --update-labels=model-refreshed=${GITHUB_SHA::7} \
+            --quiet
+          echo "Forced a new revision; instances re-pull the latest model from GCS on startup."
+
+      - name: Upload retraining artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: retrain-artifacts
+          if-no-files-found: ignore
+          path: |
+            reports/eval_salad-data.json
+            reports/regression_gate.json
+            reports/train_metrics.json
+
+      - name: Notify — outcome
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.gate.outputs.passed }}" = "true" ]; then
+            BODY="✅ New model passed the gate (recall >= ${MIN_RECALL}, FPR <= ${MAX_FPR}), was published to the GCS registry (${MODEL_VERSION}), and rolled out to Cloud Run service \`${{ vars.CLOUD_RUN_SERVICE }}\`."
+            TITLE="✅ New model deployed ($(date -u +%Y-%m-%dT%H:%MZ))"
+          else
+            BODY="⛔ Candidate model did NOT clear the gate (or data was unavailable). The existing production model is kept. See run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            TITLE="⛔ Retrain did not deploy ($(date -u +%Y-%m-%dT%H:%MZ))"
+          fi
+          gh issue create --title "$TITLE" --body "$BODY" --label "retraining" 2>/dev/null \
+            || gh issue create --title "$TITLE" --body "$BODY" \
+            || echo "issue create skipped"

@@ -1,0 +1,6 @@
+# Keep shell scripts and container entrypoints LF so they run on Linux
+# (a CRLF shebang breaks `#!/usr/bin/env bash` inside the image / on runners).
+*.sh        text eol=lf
+Dockerfile* text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
