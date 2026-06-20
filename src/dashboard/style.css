@@ -1,64 +1,195 @@
-/* Prompt Firewall dashboard — supplemental styling.
-   Kept minimal and theme-neutral so it works in both light and dark mode.
-   Verdict colors live in formatters.py; this file is layout polish only. */
+/* ============================================================================
+   Prompt Firewall — modern UI theme.
+   Theme-neutral (works in light & dark). Verdict colors live in formatters.py.
+   ========================================================================== */
 
-/* tighten the top padding so the header sits higher */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --pf-brand-1: #185FA5;
+    --pf-brand-2: #2E86DE;
+    --pf-radius: 14px;
+    --pf-shadow: 0 1px 2px rgba(16,24,40,.06), 0 4px 16px rgba(16,24,40,.08);
+    --pf-shadow-hover: 0 6px 24px rgba(16,24,40,.14);
+    --pf-border: 1px solid rgba(128,128,128,.18);
+}
+
+html, body, [class*="css"], .stApp, button, input, textarea {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+/* ── layout ───────────────────────────────────────────────────────────────── */
 .block-container {
-    padding-top: 2.2rem;
+    padding-top: 2rem;
     padding-bottom: 3rem;
+    max-width: 1280px;
 }
 
-/* metric cards: subtle bordered container that reads on any background */
-div[data-testid="stMetric"] {
-    border: 1px solid rgba(128, 128, 128, 0.25);
+h1, h2, h3 { letter-spacing: -0.02em; font-weight: 700; }
+h2 { font-size: 1.55rem !important; }
+
+hr { margin: 1rem 0 !important; opacity: .5; }
+
+/* ── sidebar ──────────────────────────────────────────────────────────────── */
+section[data-testid="stSidebar"] {
+    border-right: var(--pf-border);
+}
+section[data-testid="stSidebar"] > div { padding-top: .5rem; }
+
+/* brand hero card */
+.brand-hero {
+    background: linear-gradient(135deg, var(--pf-brand-1), var(--pf-brand-2));
+    color: #fff;
+    border-radius: var(--pf-radius);
+    padding: 16px 18px;
+    margin: 0 0 14px 0;
+    box-shadow: var(--pf-shadow);
+}
+.brand-hero .brand-title { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+.brand-hero .brand-sub { font-size: 11.5px; opacity: .9; margin-top: 2px; }
+
+/* nav radio → clean vertical menu */
+section[data-testid="stSidebar"] div[role="radiogroup"] { gap: 4px; }
+section[data-testid="stSidebar"] div[role="radiogroup"] label {
+    display: flex; align-items: center;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background .15s ease, transform .05s ease;
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: rgba(46,134,222,.10);
+}
+section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+    background: linear-gradient(135deg, rgba(24,95,165,.16), rgba(46,134,222,.16));
+    box-shadow: inset 3px 0 0 var(--pf-brand-2);
+    font-weight: 600;
+}
+/* hide the default radio dot for a menu look */
+section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+    display: none;
+}
+
+/* status card */
+.status-card {
+    border: var(--pf-border);
     border-radius: 12px;
-    padding: 14px 16px;
-    background: rgba(128, 128, 128, 0.04);
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.95;
+    background: rgba(128,128,128,.04);
 }
-
-div[data-testid="stMetricLabel"] {
-    opacity: 0.7;
-    font-size: 13px;
-}
-
-/* sidebar status block */
-.status-line {
-    font-size: 13px;
-    line-height: 1.9;
-}
+.status-card b { font-weight: 600; }
 
 .dot {
-    display: inline-block;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    margin-right: 6px;
-    vertical-align: middle;
+    display: inline-block; width: 9px; height: 9px;
+    border-radius: 50%; margin-right: 7px; vertical-align: middle;
 }
-.dot-online  { background: #639922; box-shadow: 0 0 0 3px rgba(99, 153, 34, 0.18); }
-.dot-offline { background: #E24B4A; box-shadow: 0 0 0 3px rgba(226, 75, 74, 0.18); }
-
-/* near-miss cards — amber accent on a translucent base */
-.near-miss {
-    border: 1px solid rgba(239, 159, 39, 0.55);
-    border-left: 4px solid #EF9F27;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    background: rgba(239, 159, 39, 0.08);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+.dot-online  { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.20); animation: pulse 2s infinite; }
+.dot-offline { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.20); }
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(34,197,94,.35); }
+    70%  { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
 }
-.near-miss-text { font-size: 13px; flex: 1; opacity: 0.9; }
-.near-miss-score { font-size: 13px; font-weight: 700; color: #B26A00; white-space: nowrap; }
-.near-miss-hash { font-size: 10px; opacity: 0.5; font-family: monospace; }
 
-/* chat verdict header inside the assistant message */
-.verdict-head {
+/* ── metric cards ─────────────────────────────────────────────────────────── */
+div[data-testid="stMetric"] {
+    border: var(--pf-border);
+    border-radius: var(--pf-radius);
+    padding: 16px 18px;
+    background: rgba(128,128,128,.035);
+    box-shadow: var(--pf-shadow);
+    transition: transform .12s ease, box-shadow .12s ease;
+    position: relative;
+    overflow: hidden;
+}
+div[data-testid="stMetric"]::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--pf-brand-1), var(--pf-brand-2));
+    opacity: .8;
+}
+div[data-testid="stMetric"]:hover { transform: translateY(-2px); box-shadow: var(--pf-shadow-hover); }
+div[data-testid="stMetricLabel"] { opacity: .65; font-size: 12.5px; font-weight: 500; }
+div[data-testid="stMetricValue"] { font-weight: 700; letter-spacing: -.02em; }
+
+/* ── buttons ──────────────────────────────────────────────────────────────── */
+.stButton > button {
+    border-radius: 10px;
+    border: var(--pf-border);
     font-weight: 600;
-    font-size: 13px;
-    margin-bottom: 6px;
+    transition: all .15s ease;
+    box-shadow: var(--pf-shadow);
 }
-.verdict-meta { font-size: 11px; opacity: 0.65; margin-top: 6px; }
+.stButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--pf-shadow-hover);
+    border-color: var(--pf-brand-2);
+    color: var(--pf-brand-2);
+}
+
+/* ── chat ─────────────────────────────────────────────────────────────────── */
+[data-testid="stChatMessage"] {
+    border-radius: var(--pf-radius);
+    box-shadow: var(--pf-shadow);
+    border: var(--pf-border);
+    padding: 6px 14px;
+    margin-bottom: 8px;
+}
+[data-testid="stChatInput"] {
+    border-radius: 14px;
+    box-shadow: var(--pf-shadow);
+}
+
+/* verdict / alert boxes (st.success/warning/error) */
+[data-testid="stAlert"] {
+    border-radius: 12px;
+    box-shadow: var(--pf-shadow);
+    border: none;
+}
+
+/* ── tables ───────────────────────────────────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border-radius: var(--pf-radius);
+    overflow: hidden;
+    box-shadow: var(--pf-shadow);
+    border: var(--pf-border);
+}
+
+/* ── near-miss cards ──────────────────────────────────────────────────────── */
+.near-miss {
+    border: 1px solid rgba(239,159,39,.45);
+    border-left: 4px solid #EF9F27;
+    border-radius: 12px;
+    padding: 11px 15px;
+    margin-bottom: 9px;
+    background: rgba(239,159,39,.07);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    box-shadow: var(--pf-shadow);
+    transition: transform .12s ease;
+}
+.near-miss:hover { transform: translateX(2px); }
+.near-miss-text { font-size: 13px; flex: 1; opacity: .92; }
+.near-miss-score { font-size: 13px; font-weight: 700; color: #B26A00; white-space: nowrap; }
+.near-miss-hash { font-size: 10px; opacity: .5; font-family: ui-monospace, monospace; }
+
+/* ── chips / pills ────────────────────────────────────────────────────────── */
+.pf-chip {
+    display: inline-block; padding: 4px 11px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; color: #fff;
+}
+
+.verdict-head { font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+.verdict-meta { font-size: 11px; opacity: .65; margin-top: 6px; }
+
+/* selectbox / inputs rounding */
+div[data-baseweb="select"] > div, .stTextInput input, .stNumberInput input {
+    border-radius: 10px !important;
+}
+
+/* scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(128,128,128,.35); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,.55); }

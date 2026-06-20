@@ -60,8 +60,13 @@ def record_decision(action: str) -> None:
 
 def _render_sidebar() -> str:
     with st.sidebar:
-        st.markdown("### 🛡️ Prompt Firewall")
-        st.caption("Jailbreak & prompt-injection gateway")
+        st.markdown(
+            '<div class="brand-hero">'
+            '<div class="brand-title">🛡️ Prompt Firewall</div>'
+            '<div class="brand-sub">Jailbreak &amp; prompt-injection gateway</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
         page = st.radio(
             "Navigate",
@@ -81,7 +86,7 @@ def _render_sidebar() -> str:
         dot = "dot-online" if online else "dot-offline"
         label = "online" if online else "offline"
         st.markdown(
-            f'<div class="status-line">'
+            f'<div class="status-card">'
             f'<span class="dot {dot}"></span><b>Firewall API</b> · {label}<br>'
             f'<b>Model</b> · {health.get("model_version", "—")}<br>'
             f'<b>Classifier</b> · {"loaded" if health.get("classifier_loaded") else "not loaded"}<br>'
