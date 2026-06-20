@@ -11,6 +11,10 @@ font = "sans serif"
 # is a belt-and-suspenders guard (only loads when run from this directory).
 showSidebarNavigation = false
 showErrorDetails = true
+# "developer" keeps the full toolbar (⋮ menu) on the *deployed* app so viewers
+# can open Settings → Theme to switch Light/Dark. The default ("auto") hides
+# Settings for deployed apps, leaving only Print/Record.
+toolbarMode = "developer"
 
 [server]
 headless = true
